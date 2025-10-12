@@ -3,191 +3,158 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>История на Кладбище</title>
+    <title>Хэллоуинская игра на сопоставление</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #0a1f0a;
-            color: #e6e6cc;
+            background-color: #0a2f0a; /* Темно-зеленый фон */
+            color: #ff6600; /* Неоновый оранжевый текст */
+            font-family: 'Arial Black', sans-serif;
+            text-align: center;
+            padding: 20px;
+            margin: 0;
             min-height: 100vh;
-            overflow-x: hidden;
-            position: relative;
-            font-weight: bold;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
-
-        /* Анимированный фон */
-        .halloween-bg {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -1;
-            background: 
-                radial-gradient(circle at 20% 50%, rgba(46, 139, 87, 0.1) 0%, transparent 50%),
-                radial-gradient(circle at 80% 20%, rgba(139, 0, 0, 0.1) 0%, transparent 50%),
-                radial-gradient(circle at 40% 80%, rgba(139, 69, 19, 0.1) 0%, transparent 50%);
+        
+        h1 {
+            color: #ff9900;
+            text-shadow: 0 0 10px #ff6600;
+            font-size: 2.5em;
+            margin-bottom: 30px;
         }
-
-        /* Анимация летающих объектов */
-        .floating-object {
-            position: absolute;
-            z-index: -1;
-            font-size: 2rem;
-            opacity: 0.7;
-            animation: float 15s infinite linear;
-        }
-
-        .tombstone {
-            animation-duration: 20s;
-        }
-
-        .pumpkin {
-            animation-duration: 12s;
-        }
-
-        @keyframes float {
-            0% {
-                transform: translateY(100vh) rotate(0deg);
-            }
-            100% {
-                transform: translateY(-100px) rotate(360deg);
-            }
-        }
-
-        .container {
+        
+        .game-container {
             max-width: 800px;
             margin: 0 auto;
-            padding: 20px;
-            position: relative;
-            z-index: 1;
-        }
-
-        header {
-            text-align: center;
-            padding: 20px 0;
-            border-bottom: 2px solid #8b4513;
-            margin-bottom: 30px;
-            position: relative;
-        }
-
-        h1 {
-            font-size: 3rem;
-            color: #ff8c00;
-            text-shadow: 0 0 10px #ff4500, 0 0 20px #ff8c00;
-            letter-spacing: 2px;
-            margin-bottom: 10px;
-            font-weight: 900;
-        }
-
-        .subtitle {
-            font-size: 1.2rem;
-            color: #daa520;
-            font-style: italic;
-            font-weight: bold;
-        }
-
-        .text-container {
-            background-color: rgba(34, 69, 34, 0.8);
-            padding: 30px;
-            border-radius: 10px;
-            border: 2px solid #8b4513;
-            box-shadow: 0 0 15px rgba(139, 69, 19, 0.5);
-            margin-bottom: 30px;
-            line-height: 1.8;
-            font-size: 18px;
-            position: relative;
-            font-weight: bold;
-        }
-
-        .text-container::before {
-            content: "";
-            position: absolute;
-            top: -10px;
-            left: -10px;
-            right: -10px;
-            bottom: -10px;
-            border: 1px solid #daa520;
-            border-radius: 15px;
-            z-index: -1;
-            opacity: 0.5;
-        }
-
-        .gap {
-            display: inline-block;
-            width: 150px;
-            margin: 0 5px;
-        }
-
-        input {
             width: 100%;
-            padding: 8px 12px;
-            border: 2px solid #8b4513;
+        }
+        
+        .instructions {
+            background-color: rgba(0, 0, 0, 0.5);
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border: 2px solid #ff6600;
+        }
+        
+        .pairs-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        
+        .pair {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+        
+        .cell {
+            width: 200px;
+            height: 60px;
+            border: 2px solid #ff6600;
             border-radius: 5px;
-            font-size: 16px;
-            background-color: #1a2f1a;
-            color: #e6e6cc;
-            font-family: inherit;
-            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             font-weight: bold;
-        }
-
-        input:focus {
-            outline: none;
-            border-color: #daa520;
-            box-shadow: 0 0 8px #daa520;
-        }
-
-        .correct {
-            background-color: rgba(0, 100, 0, 0.5);
-            border-color: #32cd32;
-        }
-
-        .incorrect {
-            background-color: rgba(139, 0, 0, 0.5);
-            border-color: #ff4500;
-        }
-
-        .close {
-            background-color: rgba(218, 165, 32, 0.3);
-            border-color: #daa520;
-        }
-
-        button {
-            display: block;
-            margin: 20px auto;
-            padding: 12px 30px;
-            background: linear-gradient(to bottom, #8b4513, #5d2f0a);
-            color: #ff8c00;
-            border: 2px solid #daa520;
-            border-radius: 8px;
-            font-size: 18px;
-            font-family: inherit;
+            font-size: 1.2em;
+            background-color: rgba(0, 0, 0, 0.3);
+            box-shadow: 0 0 5px #ff6600;
             cursor: pointer;
             transition: all 0.3s;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            box-shadow: 0 4px 0 #5d2f0a, 0 0 10px rgba(255, 140, 0, 0.5);
+        }
+        
+        .cell:hover {
+            background-color: rgba(255, 102, 0, 0.2);
+        }
+        
+        .cell.filled {
+            background-color: rgba(255, 102, 0, 0.4);
+        }
+        
+        .cell.verb {
+            background-color: rgba(128, 0, 128, 0.3); /* Фиолетовый для глаголов */
+        }
+        
+        .buttons-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .word-button {
+            padding: 10px 15px;
+            background-color: #ff6600;
+            color: #0a2f0a;
+            border: none;
+            border-radius: 5px;
             font-weight: bold;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 0 5px #ff9900;
         }
-
-        button:hover {
-            background: linear-gradient(to bottom, #9c5d2a, #6e3a0b);
-            transform: translateY(-2px);
-            box-shadow: 0 6px 0 #5d2f0a, 0 0 15px rgba(255, 140, 0, 0.7);
+        
+        .word-button.verb {
+            background-color: #9932cc; /* Фиолетовый для глаголов */
+            color: #ffffff;
         }
-
-        button:active {
-            transform: translateY(2px);
-            box-shadow: 0 2px 0 #5d2f0a, 0 0 10px rgba(255, 140, 0, 0.5);
+        
+        .word-button:hover {
+            background-color: #ff9900;
+            transform: scale(1.05);
         }
-
+        
+        .word-button.verb:hover {
+            background-color: #ba55d3; /* Более светлый фиолетовый при наведении */
+        }
+        
+        .word-button.selected {
+            background-color: #ffcc00;
+            box-shadow: 0 0 10px #ffcc00;
+        }
+        
+        .word-button.verb.selected {
+            background-color: #da70d6; /* Фиолетовый для выбранных глаголов */
+        }
+        
+        .message {
+            margin-top: 20px;
+            font-size: 1.3em;
+            min-height: 30px;
+            color: #ff9900;
+        }
+        
+        .check-button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #ff3300;
+            color: #0a2f0a;
+            border: none;
+            border-radius: 5px;
+            font-weight: bold;
+            font-size: 1.2em;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .check-button:hover {
+            background-color: #ff6600;
+            transform: scale(1.05);
+        }
+        
+        .halloween-decoration {
+            margin-top: 20px;
+            font-size: 2em;
+        }
+        
+        /* Стили для модальных окон */
         .modal {
             display: none;
             position: fixed;
@@ -195,276 +162,303 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(10, 31, 10, 0.9);
+            background-color: rgba(0, 0, 0, 0.7);
             z-index: 1000;
-            align-items: center;
             justify-content: center;
+            align-items: center;
         }
-
+        
         .modal-content {
-            background: linear-gradient(to bottom, #1a3a1a, #0f250f);
             padding: 30px;
             border-radius: 10px;
-            border: 3px solid #8b4513;
-            max-width: 500px;
-            width: 90%;
             text-align: center;
-            box-shadow: 0 0 25px rgba(255, 140, 0, 0.7);
-            position: relative;
-            font-weight: bold;
+            width: 80%;
+            max-width: 500px;
+            font-size: 1.3em;
+            box-shadow: 0 0 20px rgba(255, 102, 0, 0.7);
         }
-
-        .modal-content::before {
-            content: "";
-            position: absolute;
-            top: -5px;
-            left: -5px;
-            right: -5px;
-            bottom: -5px;
-            border: 1px solid #daa520;
-            border-radius: 12px;
-            z-index: -1;
-            opacity: 0.7;
+        
+        .modal-red {
+            background-color: #ff3333;
+            color: #ffffff;
+            border: 3px solid #ff0000;
         }
-
-        .success {
-            color: #32cd32;
-            font-size: 28px;
-            font-weight: 900;
-            margin-bottom: 15px;
-            text-shadow: 0 0 10px #32cd32;
+        
+        .modal-yellow {
+            background-color: #ffff66;
+            color: #000000;
+            border: 3px solid #ffcc00;
         }
-
-        .warning {
-            color: #ff8c00;
-            font-size: 28px;
-            font-weight: 900;
-            margin-bottom: 15px;
-            text-shadow: 0 0 10px #ff8c00;
+        
+        .modal-green {
+            background-color: #33cc33;
+            color: #ffffff;
+            border: 3px solid #00cc00;
         }
-
-        .reminder {
-            font-size: 16px;
-            color: #daa520;
+        
+        .modal-button {
             margin-top: 20px;
-            font-style: italic;
-            font-weight: bold;
-        }
-
-        .close-btn {
-            margin-top: 20px;
-            padding: 8px 20px;
-            background: linear-gradient(to bottom, #8b4513, #5d2f0a);
-            color: #ff8c00;
-            border: 2px solid #daa520;
+            padding: 10px 20px;
+            border: none;
             border-radius: 5px;
-            cursor: pointer;
-            font-family: inherit;
-            transition: all 0.3s;
             font-weight: bold;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: all 0.3s;
         }
-
-        .close-btn:hover {
-            background: linear-gradient(to bottom, #9c5d2a, #6e3a0b);
+        
+        .modal-red .modal-button {
+            background-color: #cc0000;
+            color: #ffffff;
         }
-
-        /* Адаптивность */
-        @media (max-width: 768px) {
-            h1 {
-                font-size: 2.2rem;
-            }
-            
-            .text-container {
-                padding: 20px;
-                font-size: 16px;
-            }
-            
-            .gap {
-                width: 120px;
-            }
-            
-            .floating-object {
-                font-size: 1.5rem;
-            }
+        
+        .modal-yellow .modal-button {
+            background-color: #ffcc00;
+            color: #000000;
         }
-
-        @media (max-width: 480px) {
-            h1 {
-                font-size: 1.8rem;
-            }
-            
-            .gap {
-                width: 100px;
-            }
-            
-            input {
-                padding: 6px 8px;
-                font-size: 14px;
-            }
+        
+        .modal-green .modal-button {
+            background-color: #009900;
+            color: #ffffff;
+        }
+        
+        .modal-button:hover {
+            transform: scale(1.05);
         }
     </style>
 </head>
 <body>
-    <div class="halloween-bg"></div>
-    
-    <!-- Летающие объекты -->
-    <div id="floatingObjects"></div>
-    
-    <div class="container">
-        <header>
-            <h1>История на Кладбище</h1>
-            <div class="subtitle">Заполни пропуски в тексте </div>
-        </header>
+    <div class="game-container">
+        <h1>🎃 Хэллоуинская игра на сопоставление 👻</h1>
         
-        <div class="text-container" id="textContainer">
-            День не предвещал <span class="gap"><input type="text" id="word1"></span>…Спокойный ветерок гулял по кладбищу, придавая уютную атмосферу, но вдруг раздался <span class="gap"><input type="text" id="word2"></span>. Погода сменилась с ясной на мрачную, кладбище погрузилось во<span class="gap"><input type="text" id="word3"></span>, попадали с неба горящие тыквы. Над могилой «Империя <span class="gap"><input type="text" id="word4"></span>» земля начала откапываться <span class="gap"><input type="text" id="word5"></span> собой, корни древа <span class="gap"><input type="text" id="word6"></span> расплетались. Крышка гроба распахнулась и… уже не человек, и не разложившийся скелет - ВОССТАЛА ИЗ МЕРТВЫХ <span class="gap"><input type="text" id="word7"></span>!
+        <div class="instructions">
+            <h3>Как играть:</h3>
+            <p>1. Выберите слово из списка внизу</p>
+            <p>2. Нажмите на пустую ячейку, чтобы поместить туда слово</p>
+            <p>3. Сопоставьте все пары правильно:</p>
+            <p>Вырезать - Тыкву, Собирать - Конфеты, Видеть - Кошмар, Испугаться - Ужас, Выпить - Яд</p>
         </div>
         
-        <button id="checkBtn">Проверить</button>
+        <div class="pairs-container" id="pairsContainer">
+            <!-- Пары ячеек будут созданы через JavaScript -->
+        </div>
+        
+        <div class="buttons-container" id="buttonsContainer">
+            <!-- Кнопки будут созданы через JavaScript -->
+        </div>
+        
+        <div class="message" id="message">Выберите слово и нажмите на пустую ячейку</div>
+        
+        <button class="check-button" id="checkButton">Проверить</button>
+        
+        <div class="halloween-decoration">
+            🎃 👻 🕷️ 🕸️ 🦇
+        </div>
     </div>
-    
-    <!-- Модальное окно для успешного результата -->
-    <div class="modal" id="successModal">
-        <div class="modal-content">
-            <div class="success">Всё верно!</div>
-            <p>Текст заполнен правильно.</p>
-            <div class="reminder">не забудь отправить результат в группу!</div>
-            <button class="close-btn" onclick="closeModal('successModal')">Закрыть</button>
+
+    <!-- Модальные окна -->
+    <div id="modalRed" class="modal">
+        <div class="modal-content modal-red">
+            <h2>ВСЕ НЕПРАВИЛЬНО!</h2>
+            <p>Попробуйте еще раз!</p>
+            <button class="modal-button" id="restartFromRed">Начать Заново</button>
         </div>
     </div>
     
-    <!-- Модальное окно для близких по значению слов -->
-    <div class="modal" id="warningModal">
-        <div class="modal-content">
-            <div class="warning">Замени слова близкими по значению</div>
-            <p>Некоторые слова не совсем точны, но близки по смыслу.</p>
-            <button class="close-btn" onclick="closeModal('warningModal')">Понятно</button>
+    <div id="modalYellow" class="modal">
+        <div class="modal-content modal-yellow">
+            <h2>НЕ ВСЕ ВАРИАНТЫ ВЕРНЫ…</h2>
+            <p>Попробуйте исправить ошибки!</p>
+            <button class="modal-button" id="fixFromYellow">Исправить</button>
+        </div>
+    </div>
+    
+    <div id="modalGreen" class="modal">
+        <div class="modal-content modal-green">
+            <h2>ВСЕ ВЕРНО!</h2>
+            <p>Не забудьте отправить данное окно в группу!</p>
         </div>
     </div>
 
     <script>
-        // Правильные ответы
-        const correctAnswers = {
-            word1: "беды",
-            word2: "гром",
-            word3: "тьму",
-            word4: "Слэя",
-            word5: "сама",
-            word6: "смерти",
-            word7: "ИМПЕРИЯ"
+        // Правильные пары слов
+        const correctPairs = {
+            "Вырезать": "Тыкву",
+            "Собирать": "Конфеты",
+            "Видеть": "Кошмар",
+            "Испугаться": "Ужас",
+            "Выпить": "Яд"
         };
-        
-        // Близкие по значению слова
-        const closeMatches = {
-            word1: ["проблем", "неприятностей", "опасности", "катастрофы"],
-            word2: ["грохот", "раскат", "шум", "треск"],
-            word3: ["мрак", "темноту", "тьму", "сумрак"],
-            word4: ["Слея", "Слей", "Слэя", "Слеа"],
-            word5: ["самостоятельно", "само", "автоматически"],
-            word6: ["гибели", "кончины", "погибели"],
-            word7: ["ДЕРЖАВА", "ГОСУДАРСТВО", "МОГУЩЕСТВО"]
-        };
-        
-        // Создаем летающие объекты
-        function createFloatingObjects() {
-            const container = document.getElementById('floatingObjects');
-            const objects = ['🪦', '🎃', '🪦', '🎃', '🪦', '🎃', '🪦', '🎃'];
+
+        // Все слова для кнопок
+        const allWords = [
+            "Вырезать", "Собирать", "Видеть", "Испугаться", "Выпить",
+            "Тыкву", "Конфеты", "Кошмар", "Ужас", "Яд"
+        ];
+
+        // Глаголы для выделения фиолетовым
+        const verbs = ["Вырезать", "Собирать", "Видеть", "Испугаться", "Выпить"];
+
+        // Перемешиваем слова для кнопок
+        const shuffledWords = [...allWords].sort(() => Math.random() - 0.5);
+
+        let selectedButton = null;
+        let filledCells = 0;
+        let correctMatches = 0;
+
+        // Создаем пары ячеек
+        const pairsContainer = document.getElementById('pairsContainer');
+        for (let i = 0; i < 5; i++) {
+            const pairDiv = document.createElement('div');
+            pairDiv.className = 'pair';
             
-            objects.forEach((obj, index) => {
-                const element = document.createElement('div');
-                element.className = `floating-object ${obj === '🪦' ? 'tombstone' : 'pumpkin'}`;
-                element.textContent = obj;
+            for (let j = 0; j < 2; j++) {
+                const cell = document.createElement('div');
+                cell.className = 'cell';
+                cell.dataset.pairIndex = i;
+                cell.dataset.cellIndex = j;
                 
-                // Случайная позиция и задержка анимации
-                element.style.left = `${Math.random() * 100}vw`;
-                element.style.animationDelay = `${Math.random() * 10}s`;
-                
-                container.appendChild(element);
-            });
-        }
-        
-        // Получаем элементы
-        const inputs = document.querySelectorAll('input');
-        const checkBtn = document.getElementById('checkBtn');
-        const successModal = document.getElementById('successModal');
-        const warningModal = document.getElementById('warningModal');
-        
-        // Функция для проверки ответов
-        function checkAnswers() {
-            let allCorrect = true;
-            let hasCloseMatches = false;
-            
-            inputs.forEach(input => {
-                const id = input.id;
-                const value = input.value.trim().toLowerCase();
-                const correctAnswer = correctAnswers[id].toLowerCase();
-                
-                // Сбрасываем стили
-                input.classList.remove('correct', 'incorrect', 'close');
-                
-                if (value === correctAnswer) {
-                    // Правильный ответ
-                    input.classList.add('correct');
-                } else if (closeMatches[id] && closeMatches[id].some(word => word.toLowerCase() === value)) {
-                    // Близкий по значению ответ
-                    input.classList.add('close');
-                    hasCloseMatches = true;
-                    allCorrect = false;
-                } else if (value !== '') {
-                    // Неправильный ответ
-                    input.classList.add('incorrect');
-                    allCorrect = false;
-                } else {
-                    // Пустое поле
-                    allCorrect = false;
+                // Первая ячейка в паре - для глагола (фиолетовая)
+                if (j === 0) {
+                    cell.classList.add('verb');
                 }
-            });
+                
+                cell.addEventListener('click', handleCellClick);
+                pairDiv.appendChild(cell);
+            }
             
-            // Показываем соответствующий результат
-            if (allCorrect) {
-                showModal('successModal');
-            } else if (hasCloseMatches) {
-                showModal('warningModal');
+            pairsContainer.appendChild(pairDiv);
+        }
+
+        // Создаем кнопки со словами
+        const buttonsContainer = document.getElementById('buttonsContainer');
+        shuffledWords.forEach(word => {
+            const button = document.createElement('button');
+            button.className = 'word-button';
+            
+            // Добавляем класс verb для глаголов
+            if (verbs.includes(word)) {
+                button.classList.add('verb');
+            }
+            
+            button.textContent = word;
+            button.addEventListener('click', () => handleButtonClick(button, word));
+            buttonsContainer.appendChild(button);
+        });
+
+        // Обработчик клика по кнопке
+        function handleButtonClick(button, word) {
+            // Снимаем выделение с предыдущей кнопки
+            if (selectedButton) {
+                selectedButton.classList.remove('selected');
+            }
+            
+            // Выделяем текущую кнопку
+            button.classList.add('selected');
+            selectedButton = button;
+            
+            document.getElementById('message').textContent = `Выбрано слово: "${word}"`;
+        }
+
+        // Обработчик клика по ячейке
+        function handleCellClick(event) {
+            const cell = event.currentTarget;
+            
+            // Если ячейка уже заполнена, ничего не делаем
+            if (cell.textContent !== '') {
+                document.getElementById('message').textContent = 'Эта ячейка уже заполнена!';
+                return;
+            }
+            
+            // Если не выбрана кнопка, показываем сообщение
+            if (!selectedButton) {
+                document.getElementById('message').textContent = 'Сначала выберите слово из списка ниже!';
+                return;
+            }
+            
+            // Проверяем, соответствует ли тип слова типу ячейки
+            const isVerb = verbs.includes(selectedButton.textContent);
+            const isVerbCell = cell.classList.contains('verb');
+            
+            if ((isVerb && !isVerbCell) || (!isVerb && isVerbCell)) {
+                document.getElementById('message').textContent = isVerbCell 
+                    ? 'Эта ячейка предназначена для глагола!' 
+                    : 'Эта ячейка предназначена для существительного!';
+                return;
+            }
+            
+            // Заполняем ячейку выбранным словом
+            cell.textContent = selectedButton.textContent;
+            cell.classList.add('filled');
+            
+            // Удаляем использованную кнопку
+            selectedButton.remove();
+            selectedButton = null;
+            
+            // Увеличиваем счетчик заполненных ячеек
+            filledCells++;
+            
+            // Проверяем, все ли ячейки заполнены
+            if (filledCells === 10) {
+                document.getElementById('message').textContent = 'Все ячейки заполнены! Нажмите "Проверить"';
+            } else {
+                document.getElementById('message').textContent = 'Выберите следующее слово';
             }
         }
-        
-        // Функция для показа модального окна
-        function showModal(modalId) {
-            const modal = document.getElementById(modalId);
-            modal.style.display = 'flex';
-        }
-        
-        // Функция для закрытия модального окна
-        function closeModal(modalId) {
-            const modal = document.getElementById(modalId);
-            modal.style.display = 'none';
-        }
-        
-        // Инициализация
-        document.addEventListener('DOMContentLoaded', function() {
-            createFloatingObjects();
+
+        // Проверка результатов
+        function checkResults() {
+            const cells = document.querySelectorAll('.cell');
+            let correctCount = 0;
             
-            // Обработчик события для кнопки проверки
-            checkBtn.addEventListener('click', checkAnswers);
-            
-            // Обработчик события для ввода по нажатию Enter
-            inputs.forEach(input => {
-                input.addEventListener('keypress', function(e) {
-                    if (e.key === 'Enter') {
-                        checkAnswers();
-                    }
-                });
-            });
-            
-            // Закрытие модального окна при клике вне его
-            window.addEventListener('click', function(e) {
-                if (e.target === successModal) {
-                    closeModal('successModal');
+            // Проверяем каждую пару
+            for (let i = 0; i < 5; i++) {
+                const pairCells = document.querySelectorAll(`.cell[data-pair-index="${i}"]`);
+                const word1 = pairCells[0].textContent;
+                const word2 = pairCells[1].textContent;
+                
+                // Проверяем, является ли пара правильной
+                if ((correctPairs[word1] === word2) || (correctPairs[word2] === word1)) {
+                    correctCount++;
                 }
-                if (e.target === warningModal) {
-                    closeModal('warningModal');
-                }
-            });
+            }
+            
+            return correctCount;
+        }
+
+        // Обработчик кнопки "Проверить"
+        document.getElementById('checkButton').addEventListener('click', () => {
+            if (filledCells < 10) {
+                document.getElementById('message').textContent = 'Сначала заполните все ячейки!';
+                return;
+            }
+            
+            const correctCount = checkResults();
+            
+            // Показываем соответствующее модальное окно
+            if (correctCount === 0) {
+                document.getElementById('modalRed').style.display = 'flex';
+            } else if (correctCount === 5) {
+                document.getElementById('modalGreen').style.display = 'flex';
+            } else {
+                document.getElementById('modalYellow').style.display = 'flex';
+            }
+        });
+
+        // Обработчики для кнопок в модальных окнах
+        document.getElementById('restartFromRed').addEventListener('click', () => {
+            location.reload();
+        });
+        
+        document.getElementById('fixFromYellow').addEventListener('click', () => {
+            document.getElementById('modalYellow').style.display = 'none';
+        });
+        
+        // Закрытие модальных окон при клике вне их
+        window.addEventListener('click', (event) => {
+            if (event.target.classList.contains('modal')) {
+                event.target.style.display = 'none';
+            }
         });
     </script>
 </body>
