@@ -1,462 +1,275 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Хэллоуинская игра на сопоставление</title>
-    <style>
-        body {
-            background-color: #0a2f0a; /* Темно-зеленый фон */
-            color: #ff6600; /* Неоновый оранжевый текст */
-            font-family: 'Arial Black', sans-serif;
-            text-align: center;
-            padding: 20px;
-            margin: 0;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-        
-        h1 {
-            color: #ff9900;
-            text-shadow: 0 0 10px #ff6600;
-            font-size: 2.5em;
-            margin-bottom: 30px;
-        }
-        
-        .game-container {
-            max-width: 800px;
-            margin: 0 auto;
-            width: 100%;
-        }
-        
-        .instructions {
-            background-color: rgba(0, 0, 0, 0.5);
-            padding: 15px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-            border: 2px solid #ff6600;
-        }
-        
-        .pairs-container {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            margin-bottom: 30px;
-        }
-        
-        .pair {
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-        }
-        
-        .cell {
-            width: 200px;
-            height: 60px;
-            border: 2px solid #ff6600;
-            border-radius: 5px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            font-size: 1.2em;
-            background-color: rgba(0, 0, 0, 0.3);
-            box-shadow: 0 0 5px #ff6600;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        
-        .cell:hover {
-            background-color: rgba(255, 102, 0, 0.2);
-        }
-        
-        .cell.filled {
-            background-color: rgba(255, 102, 0, 0.4);
-        }
-        
-        .cell.verb {
-            background-color: rgba(128, 0, 128, 0.3); /* Фиолетовый для глаголов */
-        }
-        
-        .buttons-container {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 10px;
-            margin-top: 20px;
-        }
-        
-        .word-button {
-            padding: 10px 15px;
-            background-color: #ff6600;
-            color: #0a2f0a;
-            border: none;
-            border-radius: 5px;
-            font-weight: bold;
-            font-size: 1.1em;
-            cursor: pointer;
-            transition: all 0.3s;
-            box-shadow: 0 0 5px #ff9900;
-        }
-        
-        .word-button.verb {
-            background-color: #9932cc; /* Фиолетовый для глаголов */
-            color: #ffffff;
-        }
-        
-        .word-button:hover {
-            background-color: #ff9900;
-            transform: scale(1.05);
-        }
-        
-        .word-button.verb:hover {
-            background-color: #ba55d3; /* Более светлый фиолетовый при наведении */
-        }
-        
-        .word-button.selected {
-            background-color: #ffcc00;
-            box-shadow: 0 0 10px #ffcc00;
-        }
-        
-        .word-button.verb.selected {
-            background-color: #da70d6; /* Фиолетовый для выбранных глаголов */
-        }
-        
-        .message {
-            margin-top: 20px;
-            font-size: 1.3em;
-            min-height: 30px;
-            color: #ff9900;
-        }
-        
-        .check-button {
-            margin-top: 20px;
-            padding: 10px 20px;
-            background-color: #ff3300;
-            color: #0a2f0a;
-            border: none;
-            border-radius: 5px;
-            font-weight: bold;
-            font-size: 1.2em;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        
-        .check-button:hover {
-            background-color: #ff6600;
-            transform: scale(1.05);
-        }
-        
-        .halloween-decoration {
-            margin-top: 20px;
-            font-size: 2em;
-        }
-        
-        /* Стили для модальных окон */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.7);
-            z-index: 1000;
-            justify-content: center;
-            align-items: center;
-        }
-        
-        .modal-content {
-            padding: 30px;
-            border-radius: 10px;
-            text-align: center;
-            width: 80%;
-            max-width: 500px;
-            font-size: 1.3em;
-            box-shadow: 0 0 20px rgba(255, 102, 0, 0.7);
-        }
-        
-        .modal-red {
-            background-color: #ff3333;
-            color: #ffffff;
-            border: 3px solid #ff0000;
-        }
-        
-        .modal-yellow {
-            background-color: #ffff66;
-            color: #000000;
-            border: 3px solid #ffcc00;
-        }
-        
-        .modal-green {
-            background-color: #33cc33;
-            color: #ffffff;
-            border: 3px solid #00cc00;
-        }
-        
-        .modal-button {
-            margin-top: 20px;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
-            font-weight: bold;
-            font-size: 1.1em;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        
-        .modal-red .modal-button {
-            background-color: #cc0000;
-            color: #ffffff;
-        }
-        
-        .modal-yellow .modal-button {
-            background-color: #ffcc00;
-            color: #000000;
-        }
-        
-        .modal-green .modal-button {
-            background-color: #009900;
-            color: #ffffff;
-        }
-        
-        .modal-button:hover {
-            transform: scale(1.05);
-        }
-    </style>
+<meta charset="UTF-8">
+<title>HOLD 100K</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+* {
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-tap-highlight-color: transparent;
+}
+
+body {
+    margin: 0;
+    font-family: system-ui, -apple-system, Arial, sans-serif;
+    background: linear-gradient(180deg,#7dd3fc,#e0f2fe);
+    color: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    transition: background 0.6s;
+}
+
+/* ===== ОБУЧЕНИЕ ===== */
+#tutorial {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.88);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    text-align: center;
+    padding: 30px;
+}
+#tutorialBox {
+    max-width: 520px;
+}
+#tutorialBox h2 {
+    font-size: 30px;
+    margin-bottom: 20px;
+}
+#tutorialBox p {
+    line-height: 1.6;
+    opacity: 0.85;
+}
+#tutorialBox span {
+    display: block;
+    margin-top: 25px;
+    font-size: 14px;
+    opacity: 0.6;
+}
+
+/* ===== ИГРА ===== */
+#seal {
+    font-size: 120px;
+    margin-bottom: 10px;
+}
+
+.breath { animation: breath 2s infinite ease-in-out; }
+.angry  { animation: angry 0.35s infinite; }
+.happy  { animation: happy 1.5s infinite ease-in-out; }
+
+@keyframes breath {
+    0%,100%{transform:scale(1)}
+    50%{transform:scale(1.05)}
+}
+@keyframes angry {
+    0%{transform:translateX(0)}
+    25%{transform:translateX(-8px)}
+    50%{transform:translateX(8px)}
+    75%{transform:translateX(-8px)}
+    100%{transform:translateX(0)}
+}
+@keyframes happy {
+    0%,100%{transform:rotate(0)}
+    50%{transform:rotate(10deg)}
+}
+
+#scoreBox {
+    background: #000;
+    padding: 18px 36px 10px;
+    border-radius: 22px;
+    font-size: 44px;
+    font-weight: bold;
+    text-align: center;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+}
+#target {
+    font-size: 14px;
+    opacity: 0.6;
+    margin-top: 6px;
+}
+
+#attempts {
+    margin: 14px 0 22px;
+    font-size: 14px;
+    opacity: 0.8;
+}
+
+#holdBtn {
+    width: 300px;
+    height: 300px;
+    border-radius: 50%;
+    background: radial-gradient(circle at top,#ff6b6b,#b91c1c);
+    border: none;
+    box-shadow:
+        0 0 50px rgba(255,0,0,0.7),
+        inset 0 -15px 25px rgba(0,0,0,0.4);
+    cursor: pointer;
+    touch-action: none;
+}
+#holdBtn:active { transform: scale(0.95); }
+</style>
 </head>
+
 <body>
-    <div class="game-container">
-        <h1>🎃 Хэллоуинская Испытание 👻</h1>
-        
-        <div class="instructions">
-            <h3>Как играть:</h3>
-            <p>1. Выберите слово из списка внизу</p>
-            <p>2. Нажмите на пустую ячейку, чтобы поместить туда слово</p>
-            <p>3. Сопоставьте все пары правильно:</p>
-        </div>
-        
-        <div class="pairs-container" id="pairsContainer">
-            <!-- Пары ячеек будут созданы через JavaScript -->
-        </div>
-        
-        <div class="buttons-container" id="buttonsContainer">
-            <!-- Кнопки будут созданы через JavaScript -->
-        </div>
-         
-        <button class="check-button" id="checkButton">Проверить</button>
-        
-        <div class="halloween-decoration">
-            🎃 👻 🕷️ 🕸️ 🦇
-        </div>
+
+<!-- ОБУЧЕНИЕ -->
+<div id="tutorial">
+    <div id="tutorialBox">
+        <h2>🦭 Испытание тюленя</h2>
+        <p>
+            Зажми кнопку и держи, пока счёт не дойдёт до 100 000.<br><br>
+            ❌ Отпустил — попытка потеряна<br>
+            🚫 Всего 5 попыток<br>
+            🔒 После блокировки возврата нет
+        </p>
+        <span>Нажми в любом месте, чтобы начать</span>
     </div>
+</div>
 
-    <!-- Модальные окна -->
-    <div id="modalRed" class="modal">
-        <div class="modal-content modal-red">
-            <h2>ВСЕ НЕПРАВИЛЬНО!</h2>
-            <p>Попробуйте еще раз!</p>
-            <button class="modal-button" id="restartFromRed">Начать Заново</button>
+<!-- ИГРА -->
+<div id="seal">🦭</div>
+
+<div id="scoreBox">
+    <div id="score">0.0</div>
+    <div id="target">/ 100 000</div>
+</div>
+
+<div id="attempts"></div>
+
+<button id="holdBtn"></button>
+
+<script>
+const TARGET = 100000;
+const MAX_ATTEMPTS = 5;
+
+let score = 0;
+let interval = null;
+let lastTime = null;
+
+let attempts = Number(localStorage.getItem("attempts") ?? 0);
+let locked = localStorage.getItem("locked") === "true";
+
+const seal = document.getElementById("seal");
+const scoreEl = document.getElementById("score");
+const attemptsEl = document.getElementById("attempts");
+const btn = document.getElementById("holdBtn");
+const tutorial = document.getElementById("tutorial");
+
+/* ===== ОБУЧЕНИЕ (ОДИН РАЗ) ===== */
+if (localStorage.getItem("tutorialDone") === "true") {
+    tutorial.remove();
+}
+tutorial.addEventListener("click", () => {
+    localStorage.setItem("tutorialDone","true");
+    tutorial.remove();
+});
+
+/* ===== ИНИЦ ===== */
+updateAttempts();
+if (locked) lockForever();
+
+/* ===== ЛОГИКА ===== */
+function updateAttempts() {
+    attemptsEl.textContent = `Попытки: ${MAX_ATTEMPTS - attempts} / ${MAX_ATTEMPTS}`;
+}
+
+function updateTheme() {
+    if (score < 20000)
+        document.body.style.background = "linear-gradient(180deg,#7dd3fc,#e0f2fe)";
+    else if (score < 50000)
+        document.body.style.background = "linear-gradient(180deg,#22c55e,#16a34a)";
+    else
+        document.body.style.background = "linear-gradient(180deg,#ef4444,#7f1d1d)";
+}
+
+function startCounting() {
+    if (interval || locked) return;
+
+    lastTime = performance.now();
+    seal.textContent = "😐🦭";
+    seal.className = "breath";
+
+    interval = setInterval(() => {
+        const now = performance.now();
+        if (now - lastTime > 60) return fail();
+
+        lastTime = now;
+        score += 0.1;
+        scoreEl.textContent = score.toFixed(1);
+        updateTheme();
+
+        if (score >= TARGET) win();
+    }, 1);
+}
+
+function fail() {
+    clearInterval(interval);
+    interval = null;
+
+    score = 0;
+    scoreEl.textContent = "0.0";
+
+    attempts++;
+    localStorage.setItem("attempts", attempts);
+
+    seal.textContent = "😡🦭";
+    seal.className = "angry";
+    navigator.vibrate?.([200,100,200]);
+
+    updateAttempts();
+
+    if (attempts >= MAX_ATTEMPTS) {
+        lockForever();
+    }
+}
+
+function win() {
+    clearInterval(interval);
+    seal.textContent = "😎🦭";
+    seal.className = "happy";
+    alert("🦭 100 000. Ты выдержал.");
+}
+
+function lockForever() {
+    locked = true;
+    localStorage.setItem("locked","true");
+
+    document.body.innerHTML = `
+        <div style="text-align:center">
+            <div style="font-size:120px">🔒</div>
+            <div style="font-size:24px;margin-top:20px">
+                Заблокировано навсегда
+            </div>
         </div>
-    </div>
-    
-    <div id="modalYellow" class="modal">
-        <div class="modal-content modal-yellow">
-            <h2>НЕ ВСЕ ВАРИАНТЫ ВЕРНЫ…</h2>
-            <p>Попробуйте исправить ошибки!</p>
-            <button class="modal-button" id="fixFromYellow">Исправить</button>
-        </div>
-    </div>
-    
-    <div id="modalGreen" class="modal">
-        <div class="modal-content modal-green">
-            <h2>ВСЕ ВЕРНО!</h2>
-            <p>Не забудьте отправить данное окно в группу!</p>
-        </div>
-    </div>
+    `;
+}
 
-    <script>
-        // Правильные пары слов
-        const correctPairs = {
-            "Вырезать": "Тыкву",
-            "Собирать": "Конфеты",
-            "Видеть": "Кошмар",
-            "Испугаться": "Ужас",
-            "Выпить": "Яд"
-        };
+function stopCounting() {
+    if (interval) fail();
+}
 
-        // Все слова для кнопок
-        const allWords = [
-            "Вырезать", "Собирать", "Видеть", "Испугаться", "Выпить",
-            "Тыкву", "Конфеты", "Кошмар", "Ужас", "Яд"
-        ];
+/* ===== СОБЫТИЯ ===== */
+btn.addEventListener("mousedown", startCounting);
+btn.addEventListener("mouseup", stopCounting);
+btn.addEventListener("mouseleave", stopCounting);
+btn.addEventListener("touchstart", startCounting);
+btn.addEventListener("touchend", stopCounting);
 
-        // Глаголы для выделения фиолетовым
-        const verbs = ["Вырезать", "Собирать", "Видеть", "Испугаться", "Выпить"];
+document.addEventListener("visibilitychange", () => {
+    if (document.hidden && interval) fail();
+});
+window.addEventListener("blur", () => {
+    if (interval) fail();
+});
+</script>
 
-        // Перемешиваем слова для кнопок
-        const shuffledWords = [...allWords].sort(() => Math.random() - 0.5);
-
-        let selectedButton = null;
-        let filledCells = 0;
-        let correctMatches = 0;
-
-        // Создаем пары ячеек
-        const pairsContainer = document.getElementById('pairsContainer');
-        for (let i = 0; i < 5; i++) {
-            const pairDiv = document.createElement('div');
-            pairDiv.className = 'pair';
-            
-            for (let j = 0; j < 2; j++) {
-                const cell = document.createElement('div');
-                cell.className = 'cell';
-                cell.dataset.pairIndex = i;
-                cell.dataset.cellIndex = j;
-                
-                // Первая ячейка в паре - для глагола (фиолетовая)
-                if (j === 0) {
-                    cell.classList.add('verb');
-                }
-                
-                cell.addEventListener('click', handleCellClick);
-                pairDiv.appendChild(cell);
-            }
-            
-            pairsContainer.appendChild(pairDiv);
-        }
-
-        // Создаем кнопки со словами
-        const buttonsContainer = document.getElementById('buttonsContainer');
-        shuffledWords.forEach(word => {
-            const button = document.createElement('button');
-            button.className = 'word-button';
-            
-            // Добавляем класс verb для глаголов
-            if (verbs.includes(word)) {
-                button.classList.add('verb');
-            }
-            
-            button.textContent = word;
-            button.addEventListener('click', () => handleButtonClick(button, word));
-            buttonsContainer.appendChild(button);
-        });
-
-        // Обработчик клика по кнопке
-        function handleButtonClick(button, word) {
-            // Снимаем выделение с предыдущей кнопки
-            if (selectedButton) {
-                selectedButton.classList.remove('selected');
-            }
-            
-            // Выделяем текущую кнопку
-            button.classList.add('selected');
-            selectedButton = button;
-            
-            document.getElementById('message').textContent = `Выбрано слово: "${word}"`;
-        }
-
-        // Обработчик клика по ячейке
-        function handleCellClick(event) {
-            const cell = event.currentTarget;
-            
-            // Если ячейка уже заполнена, ничего не делаем
-            if (cell.textContent !== '') {
-                document.getElementById('message').textContent = 'Эта ячейка уже заполнена!';
-                return;
-            }
-            
-            // Если не выбрана кнопка, показываем сообщение
-            if (!selectedButton) {
-                document.getElementById('message').textContent = 'Сначала выберите слово из списка ниже!';
-                return;
-            }
-            
-            // Проверяем, соответствует ли тип слова типу ячейки
-            const isVerb = verbs.includes(selectedButton.textContent);
-            const isVerbCell = cell.classList.contains('verb');
-            
-            if ((isVerb && !isVerbCell) || (!isVerb && isVerbCell)) {
-                document.getElementById('message').textContent = isVerbCell 
-                    ? 'Эта ячейка предназначена для глагола!' 
-                    : 'Эта ячейка предназначена для существительного!';
-                return;
-            }
-            
-            // Заполняем ячейку выбранным словом
-            cell.textContent = selectedButton.textContent;
-            cell.classList.add('filled');
-            
-            // Удаляем использованную кнопку
-            selectedButton.remove();
-            selectedButton = null;
-            
-            // Увеличиваем счетчик заполненных ячеек
-            filledCells++;
-            
-            // Проверяем, все ли ячейки заполнены
-            if (filledCells === 10) {
-                document.getElementById('message').textContent = 'Все ячейки заполнены! Нажмите "Проверить"';
-            } else {
-                document.getElementById('message').textContent = 'Выберите следующее слово';
-            }
-        }
-
-        // Проверка результатов
-        function checkResults() {
-            const cells = document.querySelectorAll('.cell');
-            let correctCount = 0;
-            
-            // Проверяем каждую пару
-            for (let i = 0; i < 5; i++) {
-                const pairCells = document.querySelectorAll(`.cell[data-pair-index="${i}"]`);
-                const word1 = pairCells[0].textContent;
-                const word2 = pairCells[1].textContent;
-                
-                // Проверяем, является ли пара правильной
-                if ((correctPairs[word1] === word2) || (correctPairs[word2] === word1)) {
-                    correctCount++;
-                }
-            }
-            
-            return correctCount;
-        }
-
-        // Обработчик кнопки "Проверить"
-        document.getElementById('checkButton').addEventListener('click', () => {
-            if (filledCells < 10) {
-                document.getElementById('message').textContent = 'Сначала заполните все ячейки!';
-                return;
-            }
-            
-            const correctCount = checkResults();
-            
-            // Показываем соответствующее модальное окно
-            if (correctCount === 0) {
-                document.getElementById('modalRed').style.display = 'flex';
-            } else if (correctCount === 5) {
-                document.getElementById('modalGreen').style.display = 'flex';
-            } else {
-                document.getElementById('modalYellow').style.display = 'flex';
-            }
-        });
-
-        // Обработчики для кнопок в модальных окнах
-        document.getElementById('restartFromRed').addEventListener('click', () => {
-            location.reload();
-        });
-        
-        document.getElementById('fixFromYellow').addEventListener('click', () => {
-            document.getElementById('modalYellow').style.display = 'none';
-        });
-        
-        // Закрытие модальных окон при клике вне их
-        window.addEventListener('click', (event) => {
-            if (event.target.classList.contains('modal')) {
-                event.target.style.display = 'none';
-            }
-        });
-    </script>
 </body>
 </html>
