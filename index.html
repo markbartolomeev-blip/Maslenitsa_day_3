@@ -2,469 +2,332 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<title>HOLD 100K</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🥞 Масленица</title>
 
 <style>
-* {
-    user-select: none;
-    -webkit-user-select: none;
-    -webkit-tap-highlight-color: transparent;
+body{
+    margin:0;
+    font-family:Arial,sans-serif;
+    text-align:center;
+    overflow:hidden;
+    background:
+    radial-gradient(circle at 20% 20%, #ffcc66 8%, transparent 9%),
+    radial-gradient(circle at 80% 30%, #ff6666 8%, transparent 9%),
+    linear-gradient(135deg,#ffefba,#ffffff);
 }
 
-body {
-    margin: 0;
-    font-family: system-ui, -apple-system, Arial, sans-serif;
-    background: linear-gradient(180deg,#7dd3fc,#e0f2fe);
-    color: white;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    height: 100vh;
-    transition: background 0.6s;
+#stats{
+    font-size:22px;
+    font-weight:bold;
+    margin-top:10px;
 }
 
-/* ===== ОБУЧЕНИЕ ===== */
-#tutorial {
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.88);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 1000;
-    text-align: center;
-    padding: 30px;
-}
-#tutorialBox {
-    max-width: 520px;
-}
-#tutorialBox h2 {
-    font-size: 30px;
-    margin-bottom: 20px;
-}
-#tutorialBox p {
-    line-height: 1.6;
-    opacity: 0.85;
-}
-#tutorialBox span {
-    display: block;
-    margin-top: 25px;
-    font-size: 14px;
-    opacity: 0.6;
+#game{
+    position:relative;
+    width:95vw;
+    max-width:500px;
+    height:60vh;
+    margin:10px auto;
+    border:4px solid #b22222;
+    border-radius:15px;
+    background:linear-gradient(#e0f7ff,#ffffff);
+    overflow:hidden;
 }
 
-/* ===== ИГРА ===== */
-#seal {
-    font-size: 120px;
-    margin-bottom: 10px;
+.item{
+    position:absolute;
+    font-size:8vw;
 }
 
-.breath { animation: breath 2s infinite ease-in-out; }
-.angry  { animation: angry 0.35s infinite; }
-.happy  { animation: happy 1.5s infinite ease-in-out; }
-
-@keyframes breath {
-    0%,100%{transform:scale(1)}
-    50%{transform:scale(1.05)}
-}
-@keyframes angry {
-    0%{transform:translateX(0)}
-    25%{transform:translateX(-8px)}
-    50%{transform:translateX(8px)}
-    75%{transform:translateX(-8px)}
-    100%{transform:translateX(0)}
-}
-@keyframes happy {
-    0%,100%{transform:rotate(0)}
-    50%{transform:rotate(10deg)}
+#player{
+    position:absolute;
+    bottom:10px;
+    font-size:14vw;
+    transition:left 0.1s;
 }
 
-#scoreBox {
-    background: #000;
-    padding: 18px 36px 10px;
-    border-radius: 22px;
-    font-size: 44px;
-    font-weight: bold;
-    text-align: center;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-}
-#target {
-    font-size: 14px;
-    opacity: 0.6;
-    margin-top: 6px;
-}
-
-#attempts {
-    margin: 14px 0 22px;
-    font-size: 14px;
-    opacity: 0.8;
+#overlay{
+    position:absolute;
+    width:100%;
+    height:100%;
+    background:rgba(0,0,0,0.9);
+    color:white;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    flex-direction:column;
+    padding:20px;
+    box-sizing:border-box;
+    text-align:center;
+    z-index:10;
 }
 
-#holdBtn {
-    width: 300px;
-    height: 300px;
-    border-radius: 50%;
-    background: radial-gradient(circle at top,#ff6b6b,#b91c1c);
-    border: none;
-    box-shadow:
-        0 0 50px rgba(255,0,0,0.7),
-        inset 0 -15px 25px rgba(0,0,0,0.4);
-    cursor: pointer;
-    touch-action: none;
-}
-#holdBtn:active { transform: scale(0.95); }
-
-/* ===== СООБЩЕНИЕ ОБ УСПЕХЕ ===== */
-.success-message {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.95);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    z-index: 2000;
-    color: white;
-    text-align: center;
-    padding: 20px;
-    display: none;
+#controls{
+    margin-top:10px;
 }
 
-.success-content {
-    background: linear-gradient(45deg, #1a5f7a, #0a2e38);
-    padding: 40px;
-    border-radius: 20px;
-    max-width: 600px;
-    box-shadow: 0 0 50px rgba(26, 95, 122, 0.7);
-    border: 3px solid #ffcc00;
-    animation: successPulse 2s infinite;
-}
-
-@keyframes successPulse {
-    0% { transform: scale(1); box-shadow: 0 0 50px rgba(26, 95, 122, 0.7); }
-    50% { transform: scale(1.05); box-shadow: 0 0 70px rgba(26, 95, 122, 0.9); }
-    100% { transform: scale(1); box-shadow: 0 0 50px rgba(26, 95, 122, 0.7); }
-}
-
-.success-title {
-    font-size: 36px;
-    margin-bottom: 20px;
-    color: #ffcc00;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-}
-
-.success-text {
-    font-size: 24px;
-    margin-bottom: 30px;
-    color: #fff;
-}
-
-.continue-button {
-    background: #ffcc00;
-    color: #000;
-    border: none;
-    padding: 15px 30px;
-    font-size: 20px;
-    font-weight: bold;
-    border-radius: 50px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    box-shadow: 0 5px 15px rgba(255, 204, 0, 0.4);
-}
-
-.continue-button:hover {
-    background: #ffdd44;
-    transform: scale(1.1);
-    box-shadow: 0 8px 20px rgba(255, 204, 0, 0.6);
-}
-
-.confetti {
-    position: fixed;
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    z-index: 2001;
-    pointer-events: none;
-}
-
-/* ===== ЭКРАН ЗАБЛОКИРОВАН ===== */
-#lockedScreen {
-    position: fixed;
-    inset: 0;
-    background: #000;
-    color: white;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    z-index: 1500;
-    display: none;
-}
-
-.locked-content {
-    text-align: center;
-    padding: 40px;
-}
-
-.locked-content div:first-child {
-    font-size: 120px;
-    margin-bottom: 20px;
+.controlBtn{
+    font-size:28px;
+    padding:10px 25px;
+    margin:5px;
+    border:none;
+    border-radius:12px;
+    background:#ffcc66;
 }
 </style>
 </head>
-
 <body>
 
-<!-- Сообщение об успешном прохождении -->
-<div id="successMessage" class="success-message">
-    <div class="success-content">
-        <h1 class="success-title">🎉 ПОБЕДА! 🎉</h1>
-        <p class="success-text">Молодец! Ты прошел(-а) мини-игру №1, не забудь отправить скрин в группу!</p>
-        <p style="font-size: 20px; margin-bottom: 20px; color: #ffcc00;">100 000 очков достигнуто!</p>
-        <button class="continue-button" onclick="restartGame()">Играть еще раз</button>
-    </div>
+<h2>🥞 Масленица</h2>
+
+<div id="stats">
+⏳ <span id="time">90</span> |
+🥞 <span id="caught">0</span>
 </div>
 
-<!-- Экран блокировки -->
-<div id="lockedScreen">
-    <div class="locked-content">
-        <div>🔒</div>
-        <div style="font-size:24px;margin-top:20px">
-            Заблокировано навсегда
-        </div>
-        <div style="font-size:16px;margin-top:15px;opacity:0.7">
-            Использованы все попытки
-        </div>
-    </div>
+<div id="game">
+    <div id="player">🪆</div>
+    <div id="overlay"></div>
 </div>
 
-<!-- ОБУЧЕНИЕ -->
-<div id="tutorial">
-    <div id="tutorialBox">
-        <h2>🦭 Испытание тюленя</h2>
-        <p>
-            Зажми кнопку и держи, пока счёт не дойдёт до 100 000.<br><br>
-            ❌ Отпустил — попытка потеряна<br>
-            🚫 Всего 5 попыток<br>
-            🔒 После блокировки возврата нет
-        </p>
-        <span>Нажми в любом месте, чтобы начать</span>
-    </div>
+<div id="controls">
+    <button class="controlBtn" onclick="moveLeft()">⬅️</button>
+    <button class="controlBtn" onclick="moveRight()">➡️</button>
 </div>
-
-<!-- ИГРА -->
-<div id="seal">🦭</div>
-
-<div id="scoreBox">
-    <div id="score">0.0</div>
-    <div id="target">/ 100 000</div>
-</div>
-
-<div id="attempts"></div>
-
-<button id="holdBtn"></button>
 
 <script>
-const TARGET = 100000;
-const MAX_ATTEMPTS = 5;
+const game=document.getElementById("game");
+const player=document.getElementById("player");
+const overlay=document.getElementById("overlay");
+const timeDisplay=document.getElementById("time");
+const caughtDisplay=document.getElementById("caught");
+const controls=document.getElementById("controls");
 
-let score = 0;
-let interval = null;
-let lastTime = null;
+let columns;
+let playerColumn=1;
 
-let attempts = Number(localStorage.getItem("attempts") ?? 0);
-let locked = localStorage.getItem("locked") === "true";
+let caught=0;
+let wrong=0;
+let missed=0;
 
-const seal = document.getElementById("seal");
-const scoreEl = document.getElementById("score");
-const attemptsEl = document.getElementById("attempts");
-const btn = document.getElementById("holdBtn");
-const tutorial = document.getElementById("tutorial");
-const successMessage = document.getElementById("successMessage");
-const lockedScreen = document.getElementById("lockedScreen");
+let timeLeft=90;
+let gameActive=false;
 
-/* ===== ОБУЧЕНИЕ (ОДИН РАЗ) ===== */
-if (localStorage.getItem("tutorialDone") === "true") {
-    tutorial.remove();
-}
-tutorial.addEventListener("click", () => {
-    localStorage.setItem("tutorialDone","true");
-    tutorial.remove();
-});
+let speed=3;
+let activeColumns=[false,false,false];
 
-/* ===== ИНИЦИАЛИЗАЦИЯ ===== */
-updateAttempts();
-if (locked) {
-    lockForever();
+if(localStorage.getItem("maslenitsaPlayed")){
+    overlay.innerHTML="<h2>🎉 Игра уже завершена!</h2>";
+    controls.style.display="none";
+}else{
+    showTutorial();
 }
 
-/* ===== ЛОГИКА ===== */
-function updateAttempts() {
-    attemptsEl.textContent = `Попытки: ${MAX_ATTEMPTS - attempts} / ${MAX_ATTEMPTS}`;
+function showTutorial(){
+    overlay.innerHTML=`
+        <h2>📜 Обучение</h2>
+        <p>Лови 🥞 — получаешь очки</p>
+        <p>Не лови 💩 — это ошибка</p>
+        <p>💣 отнимает 1 блин</p>
+        <p>Игра длится 90 секунд</p>
+        <p>ИЛИ заканчивается при 50 блинах</p>
+        <br>
+        <button onclick="startGame()" style="padding:10px 20px;font-size:18px;">Начать игру</button>
+    `;
 }
 
-function updateTheme() {
-    if (score < 20000)
-        document.body.style.background = "linear-gradient(180deg,#7dd3fc,#e0f2fe)";
-    else if (score < 50000)
-        document.body.style.background = "linear-gradient(180deg,#22c55e,#16a34a)";
-    else
-        document.body.style.background = "linear-gradient(180deg,#ef4444,#7f1d1d)";
+function startGame(){
+    overlay.style.display="none";
+    gameActive=true;
 }
 
-function startCounting() {
-    if (interval || locked) return;
-
-    lastTime = performance.now();
-    seal.textContent = "😐🦭";
-    seal.className = "breath";
-
-    interval = setInterval(() => {
-        const now = performance.now();
-        if (now - lastTime > 60) return fail();
-
-        lastTime = now;
-        score += 0.1;
-        scoreEl.textContent = score.toFixed(1);
-        updateTheme();
-
-        if (score >= TARGET) win();
-    }, 1);
+function updateColumns(){
+    const w=game.clientWidth;
+    columns=[w*0.15,w*0.45,w*0.75];
+    player.style.left=columns[playerColumn]+"px";
 }
+window.addEventListener("resize",updateColumns);
+updateColumns();
 
-function fail() {
-    clearInterval(interval);
-    interval = null;
-
-    score = 0;
-    scoreEl.textContent = "0.0";
-
-    attempts++;
-    localStorage.setItem("attempts", attempts);
-
-    seal.textContent = "😡🦭";
-    seal.className = "angry";
-    navigator.vibrate?.([200,100,200]);
-
-    updateAttempts();
-
-    if (attempts >= MAX_ATTEMPTS) {
-        lockForever();
+function moveLeft(){
+    if(!gameActive) return;
+    if(playerColumn>0){
+        playerColumn--;
+        player.style.left=columns[playerColumn]+"px";
     }
 }
 
-function win() {
-    clearInterval(interval);
-    seal.textContent = "😎🦭";
-    seal.className = "happy";
-    
-    // Показываем сообщение об успехе
-    showSuccessMessage();
+function moveRight(){
+    if(!gameActive) return;
+    if(playerColumn<2){
+        playerColumn++;
+        player.style.left=columns[playerColumn]+"px";
+    }
 }
 
-function showSuccessMessage() {
-    // Скрываем все элементы игры
-    document.querySelectorAll('#seal, #scoreBox, #attempts, #holdBtn').forEach(el => {
-        el.style.display = 'none';
-    });
-    
-    // Показываем сообщение об успехе
-    successMessage.style.display = 'flex';
-    
-    // Запускаем конфетти
-    createConfetti();
+document.addEventListener("keydown",(e)=>{
+    if(e.key==="ArrowLeft") moveLeft();
+    if(e.key==="ArrowRight") moveRight();
+});
+
+function getFreeColumn(){
+    let free=[];
+    for(let i=0;i<3;i++){
+        if(!activeColumns[i]) free.push(i);
+    }
+    if(free.length===0) return null;
+    return free[Math.floor(Math.random()*free.length)];
 }
 
-function createConfetti() {
-    const colors = ['#ffcc00', '#ff3366', '#33ff66', '#3366ff', '#ff9933', '#ff66cc'];
-    
-    for(let i = 0; i < 100; i++) {
-        const confetti = document.createElement('div');
-        confetti.classList.add('confetti');
-        confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
-        confetti.style.left = Math.random() * 100 + '%';
-        confetti.style.top = '-10px';
-        
-        const size = Math.random() * 12 + 6;
-        confetti.style.width = size + 'px';
-        confetti.style.height = size + 'px';
-        
-        // Случайная форма
-        if (Math.random() > 0.5) {
-            confetti.style.borderRadius = '50%';
-        } else {
-            confetti.style.borderRadius = '0';
-            confetti.style.transform = 'rotate(' + (Math.random() * 360) + 'deg)';
-        }
-        
-        const animation = confetti.animate([
-            { 
-                transform: `translateY(0) rotate(0deg)`, 
-                opacity: 1 
-            },
-            { 
-                transform: `translateY(${window.innerHeight + 100}px) rotate(${Math.random() * 360}deg)`, 
-                opacity: 0 
+function createItem(){
+    if(!gameActive) return;
+
+    let col=getFreeColumn();
+    if(col===null) return;
+    activeColumns[col]=true;
+
+    const item=document.createElement("div");
+    item.classList.add("item");
+
+    let rand=Math.random();
+    let type;
+
+    if(rand<0.45) type="pancake";
+    else if(rand<0.85) type="poop";
+    else type="bomb";
+
+    item.textContent= type==="pancake"?"🥞":type==="poop"?"💩":"💣";
+    item.style.left=columns[col]+"px";
+    game.appendChild(item);
+
+    let pos=0;
+
+    function fall(){
+        if(!gameActive) return;
+
+        pos+=speed;
+        item.style.top=pos+"px";
+
+        if(pos>game.clientHeight-100){
+
+            if(col===playerColumn){
+
+                if(type==="pancake"){
+                    caught++;
+                    if(caught>=50){
+                        caught=50;
+                        caughtDisplay.textContent=caught;
+                        activeColumns[col]=false;
+                        item.remove();
+                        endGame();
+                        return;
+                    }
+                }
+
+                if(type==="poop") wrong++;
+
+                if(type==="bomb"){
+                    caught--;
+                    if(caught<0) caught=0;
+                }
+
+            }else{
+                if(type==="pancake") missed++;
             }
-        ], {
-            duration: Math.random() * 3000 + 2000,
-            easing: 'cubic-bezier(0.215, 0.610, 0.355, 1)'
-        });
-        
-        document.body.appendChild(confetti);
-        
-        animation.onfinish = () => {
-            confetti.remove();
-        };
+
+            caughtDisplay.textContent=caught;
+            activeColumns[col]=false;
+            item.remove();
+            return;
+        }
+
+        requestAnimationFrame(fall);
     }
+
+    requestAnimationFrame(fall);
 }
 
-function lockForever() {
-    locked = true;
-    localStorage.setItem("locked","true");
-    
-    // Скрываем игровые элементы
-    document.querySelectorAll('#seal, #scoreBox, #attempts, #holdBtn').forEach(el => {
-        el.style.display = 'none';
-    });
-    
-    // Показываем экран блокировки
-    lockedScreen.style.display = 'flex';
+let spawn=setInterval(()=>{
+    if(!gameActive) return;
+    createItem();
+},800);
+
+setInterval(()=>{
+    if(gameActive){
+        speed *= 1.05;
+    }
+},5000);
+
+const timer=setInterval(()=>{
+    if(!gameActive) return;
+
+    timeLeft--;
+    timeDisplay.textContent=timeLeft;
+
+    if(timeLeft<=0){
+        endGame();
+    }
+},1000);
+
+function calculateResults(){
+
+    let catchBonus=0;
+    let errorBonus=0;
+    let missBonus=0;
+
+    if(caught<=3) catchBonus=0;
+    else if(caught<=6) catchBonus=1;
+    else if(caught<=10) catchBonus=2;
+    else if(caught<=20) catchBonus=3;
+    else if(caught<=30) catchBonus=4;
+    else if(caught<=35) catchBonus=5;
+    else if(caught<=40) catchBonus=6;
+    else if(caught<=49) catchBonus=5;
+    else if(caught==50) catchBonus=10;
+
+    if(wrong>=20) errorBonus=0;
+    else if(wrong>=15) errorBonus=1;
+    else if(wrong>=10) errorBonus=2;
+    else if(wrong>=5) errorBonus=3;
+    else if(wrong>=3) errorBonus=4;
+    else if(wrong>=1) errorBonus=5;
+    else if(wrong==0) errorBonus=10;
+
+    if(missed<=3) missBonus=10;
+    else if(missed<=5) missBonus=9;
+    else if(missed<=8) missBonus=8;
+    else if(missed<=15) missBonus=7;
+    else if(missed<=20) missBonus=6;
+    else if(missed<=30) missBonus=5;
+    else if(missed<=36) missBonus=4;
+    else if(missed<=41) missBonus=3;
+    else missBonus=0;
+
+    let total=catchBonus+errorBonus+missBonus;
+
+    return {catchBonus,errorBonus,missBonus,total};
 }
 
-function restartGame() {
-    // Сбрасываем данные
-    localStorage.clear();
-    
-    // Скрываем сообщение об успехе
-    successMessage.style.display = 'none';
-    
-    // Перезагружаем страницу
-    location.reload();
+function endGame(){
+    gameActive=false;
+    clearInterval(spawn);
+    clearInterval(timer);
+    localStorage.setItem("maslenitsaPlayed","true");
+    controls.style.display="none";
+
+    let r=calculateResults();
+
+    overlay.style.display="flex";
+    overlay.innerHTML=`
+        <h2>Результаты игры:</h2>
+        <p>Поймано блинов: ${caught}(+${r.catchBonus})</p>
+        <p>Поймано ошибок: ${wrong}(+${r.errorBonus})</p>
+        <p>Пропущено блинов: ${missed}(+${r.missBonus})</p>
+        <h3>ИТОГО: ${r.total} блинов</h3>
+        <p>Отправь результат в группу, чтобы засчитать!</p>
+    `;
 }
-
-function stopCounting() {
-    if (interval) fail();
-}
-
-/* ===== СОБЫТИЯ ===== */
-btn.addEventListener("mousedown", startCounting);
-btn.addEventListener("mouseup", stopCounting);
-btn.addEventListener("mouseleave", stopCounting);
-btn.addEventListener("touchstart", startCounting);
-btn.addEventListener("touchend", stopCounting);
-
-document.addEventListener("visibilitychange", () => {
-    if (document.hidden && interval) fail();
-});
-window.addEventListener("blur", () => {
-    if (interval) fail();
-});
 </script>
 
 </body>
