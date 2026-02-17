@@ -2,332 +2,485 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>🥞 Масленица</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Масленица: Игра на Память</title>
 
 <style>
 body{
     margin:0;
-    font-family:Arial,sans-serif;
+    font-family:Arial, sans-serif;
+    background:linear-gradient(135deg,#ffb347,#ffcc33,#ff6f61);
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    color:#5a2d0c;
     text-align:center;
+    overflow-x:hidden;
+}
+
+h1{ margin:12px 0 4px 0; }
+
+#timer{ font-size:20px; font-weight:bold; }
+#round{ font-size:17px; margin-bottom:5px; }
+#moves{ font-size:17px; color:#8b4513; margin:4px 0; }
+
+/* ===== ШКАЛА ===== */
+.score-container{
+    width:85%;
+    max-width:320px;
+    height:22px;
+    background:#ffd8a8;
+    border-radius:20px;
     overflow:hidden;
-    background:
-    radial-gradient(circle at 20% 20%, #ffcc66 8%, transparent 9%),
-    radial-gradient(circle at 80% 30%, #ff6666 8%, transparent 9%),
-    linear-gradient(135deg,#ffefba,#ffffff);
-}
-
-#stats{
-    font-size:22px;
-    font-weight:bold;
-    margin-top:10px;
-}
-
-#game{
     position:relative;
+    margin:8px 0;
+}
+
+.score-bar{
+    height:100%;
+    width:0%;
+    background:#e67e22;
+    transition:width 0.3s;
+}
+
+.score-text{
+    position:absolute;
+    width:100%;
+    top:0;
+    left:0;
+    font-size:14px;
+    line-height:22px;
+    font-weight:bold;
+}
+
+/* ===== ИГРА ===== */
+.game{
+    display:grid;
+    gap:8px;
+    justify-content:center;
+    margin:10px;
     width:95vw;
     max-width:500px;
-    height:60vh;
-    margin:10px auto;
-    border:4px solid #b22222;
-    border-radius:15px;
-    background:linear-gradient(#e0f7ff,#ffffff);
-    overflow:hidden;
 }
 
-.item{
-    position:absolute;
-    font-size:8vw;
+.round1 .card{ width:90px; height:90px; }
+.round2 .card{ width:80px; height:80px; }
+.round3 .card{ width:65px; height:65px; }
+
+.card{
+    perspective:600px;
+    position:relative;
 }
 
-#player{
-    position:absolute;
-    bottom:10px;
-    font-size:14vw;
-    transition:left 0.1s;
+.inner{
+    width:100%;
+    height:100%;
+    position:relative;
+    transform-style:preserve-3d;
+    transition:transform 0.4s;
 }
 
-#overlay{
+.card.flipped .inner{
+    transform:rotateY(180deg);
+}
+
+.front, .back{
     position:absolute;
     width:100%;
     height:100%;
-    background:rgba(0,0,0,0.9);
-    color:white;
+    border-radius:50%;
     display:flex;
-    justify-content:center;
     align-items:center;
-    flex-direction:column;
-    padding:20px;
-    box-sizing:border-box;
-    text-align:center;
-    z-index:10;
+    justify-content:center;
+    font-size:26px;
+    backface-visibility:hidden;
+    transition:background 0.3s, box-shadow 0.3s;
 }
 
-#controls{
-    margin-top:10px;
+.front{ background:#e67e22; }
+.back{
+    background:#fff3cd;
+    transform:rotateY(180deg);
 }
 
-.controlBtn{
-    font-size:28px;
-    padding:10px 25px;
-    margin:5px;
+.correct .back{
+    background:#b8f5b1;
+    box-shadow:0 0 15px #4caf50;
+}
+
+.wrong .back{
+    background:#ffb3b3;
+    box-shadow:0 0 15px #ff0000;
+}
+
+@keyframes shake{
+    0%,100%{ transform:rotateY(180deg) translateX(0); }
+    25%{ transform:rotateY(180deg) translateX(-5px); }
+    75%{ transform:rotateY(180deg) translateX(5px); }
+}
+
+.wrong .inner{
+    animation:shake 0.4s;
+}
+
+.floating{
+    position:absolute;
+    font-weight:bold;
+    pointer-events:none;
+    animation:floatUp 1s ease-out forwards;
+}
+
+@keyframes floatUp{
+    0% {opacity:1; transform:translateY(0);}
+    100% {opacity:0; transform:translateY(-40px);}
+}
+
+button{
+    padding:8px 18px;
     border:none;
-    border-radius:12px;
-    background:#ffcc66;
+    border-radius:20px;
+    font-size:14px;
+    cursor:pointer;
+    background:#ff6f61;
+    color:white;
+    margin:15px 0;
+}
+
+#results, #tutorial {
+    margin: 20px;
+    font-size: 16px;
+    background: #fff3cd;
+    padding: 15px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.2);
+    width: 90%;
+    max-width: 600px;
+    text-align: left;
+}
+
+#startButton {
+    margin-top: 10px;
 }
 </style>
 </head>
 <body>
 
-<h2>🥞 Масленица</h2>
+<h1>Масленица: Игра на Память</h1>
+<div id="timer">01:30</div>
+<div id="round">Раунд 1</div>
+<div id="moves">Ходы: 10</div>
 
-<div id="stats">
-⏳ <span id="time">90</span> |
-🥞 <span id="caught">0</span>
+<div class="score-container">
+    <div class="score-bar" id="scoreBar"></div>
+    <div class="score-text" id="scoreText">0 / 100</div>
 </div>
 
-<div id="game">
-    <div id="player">🪆</div>
-    <div id="overlay"></div>
-</div>
-
-<div id="controls">
-    <button class="controlBtn" onclick="moveLeft()">⬅️</button>
-    <button class="controlBtn" onclick="moveRight()">➡️</button>
+<div class="game round1" id="game" style="display:none;"></div>
+<div id="results" style="display:none;"></div>
+<div id="tutorial">
+    <h2>Добро пожаловать! 🥞</h2>
+    <p>Найди пары одинаковых эмодзи, кликая на карточки.</p>
+    <p>У тебя ограничено время (1:30) и ходы на каждый раунд.</p>
+    <p>За совпадения +5 очков, за ошибки -2.</p>
+    <p>Собери все пары в 3 раундах, чтобы выиграть!</p>
+    <p>Меньше ходов и времени — больше блинчиков в конце.</p>
+    <button id="startButton" onclick="startGame()">Начать игру</button>
 </div>
 
 <script>
-const game=document.getElementById("game");
-const player=document.getElementById("player");
-const overlay=document.getElementById("overlay");
-const timeDisplay=document.getElementById("time");
-const caughtDisplay=document.getElementById("caught");
-const controls=document.getElementById("controls");
+const emojis = [
+    "🥞","🪆","🔥","🌞","🌷","🍄‍🟫",
+    "🍯","🍓","🐻","🧈"
+];
 
-let columns;
-let playerColumn=1;
+let round = 1;
+let firstCard = null;
+let lock = false;
+let matches = 0;
+let timer;
+let timeLeft = 90;
+let score = 0;
+let movesLeft = 10;
+let totalMoves = 0;
 
-let caught=0;
-let wrong=0;
-let missed=0;
-
-let timeLeft=90;
-let gameActive=false;
-
-let speed=3;
-let activeColumns=[false,false,false];
-
-if(localStorage.getItem("maslenitsaPlayed")){
-    overlay.innerHTML="<h2>🎉 Игра уже завершена!</h2>";
-    controls.style.display="none";
-}else{
-    showTutorial();
-}
-
-function showTutorial(){
-    overlay.innerHTML=`
-        <h2>📜 Обучение</h2>
-        <p>Лови 🥞 — получаешь очки</p>
-        <p>Не лови 💩 — это ошибка</p>
-        <p>💣 отнимает 1 блин</p>
-        <p>Игра длится 90 секунд</p>
-        <p>ИЛИ заканчивается при 50 блинах</p>
-        <br>
-        <button onclick="startGame()" style="padding:10px 20px;font-size:18px;">Начать игру</button>
-    `;
-}
+const maxMoves = [0, 10, 20, 30]; // раунды 1,2,3
 
 function startGame(){
-    overlay.style.display="none";
-    gameActive=true;
+    document.getElementById("tutorial").style.display = "none";
+    document.getElementById("game").style.display = "grid";
+
+    round = 1;
+    timeLeft = 90;
+    score = 0;
+    totalMoves = 0;
+    updateScore();
+    startTimer();
+    startRound();
+    document.getElementById("results").style.display = "none";
 }
 
-function updateColumns(){
-    const w=game.clientWidth;
-    columns=[w*0.15,w*0.45,w*0.75];
-    player.style.left=columns[playerColumn]+"px";
-}
-window.addEventListener("resize",updateColumns);
-updateColumns();
-
-function moveLeft(){
-    if(!gameActive) return;
-    if(playerColumn>0){
-        playerColumn--;
-        player.style.left=columns[playerColumn]+"px";
-    }
-}
-
-function moveRight(){
-    if(!gameActive) return;
-    if(playerColumn<2){
-        playerColumn++;
-        player.style.left=columns[playerColumn]+"px";
-    }
-}
-
-document.addEventListener("keydown",(e)=>{
-    if(e.key==="ArrowLeft") moveLeft();
-    if(e.key==="ArrowRight") moveRight();
-});
-
-function getFreeColumn(){
-    let free=[];
-    for(let i=0;i<3;i++){
-        if(!activeColumns[i]) free.push(i);
-    }
-    if(free.length===0) return null;
-    return free[Math.floor(Math.random()*free.length)];
-}
-
-function createItem(){
-    if(!gameActive) return;
-
-    let col=getFreeColumn();
-    if(col===null) return;
-    activeColumns[col]=true;
-
-    const item=document.createElement("div");
-    item.classList.add("item");
-
-    let rand=Math.random();
-    let type;
-
-    if(rand<0.45) type="pancake";
-    else if(rand<0.85) type="poop";
-    else type="bomb";
-
-    item.textContent= type==="pancake"?"🥞":type==="poop"?"💩":"💣";
-    item.style.left=columns[col]+"px";
-    game.appendChild(item);
-
-    let pos=0;
-
-    function fall(){
-        if(!gameActive) return;
-
-        pos+=speed;
-        item.style.top=pos+"px";
-
-        if(pos>game.clientHeight-100){
-
-            if(col===playerColumn){
-
-                if(type==="pancake"){
-                    caught++;
-                    if(caught>=50){
-                        caught=50;
-                        caughtDisplay.textContent=caught;
-                        activeColumns[col]=false;
-                        item.remove();
-                        endGame();
-                        return;
-                    }
-                }
-
-                if(type==="poop") wrong++;
-
-                if(type==="bomb"){
-                    caught--;
-                    if(caught<0) caught=0;
-                }
-
-            }else{
-                if(type==="pancake") missed++;
-            }
-
-            caughtDisplay.textContent=caught;
-            activeColumns[col]=false;
-            item.remove();
-            return;
-        }
-
-        requestAnimationFrame(fall);
-    }
-
-    requestAnimationFrame(fall);
-}
-
-let spawn=setInterval(()=>{
-    if(!gameActive) return;
-    createItem();
-},800);
-
-setInterval(()=>{
-    if(gameActive){
-        speed *= 1.05;
-    }
-},5000);
-
-const timer=setInterval(()=>{
-    if(!gameActive) return;
-
-    timeLeft--;
-    timeDisplay.textContent=timeLeft;
-
-    if(timeLeft<=0){
-        endGame();
-    }
-},1000);
-
-function calculateResults(){
-
-    let catchBonus=0;
-    let errorBonus=0;
-    let missBonus=0;
-
-    if(caught<=3) catchBonus=0;
-    else if(caught<=6) catchBonus=1;
-    else if(caught<=10) catchBonus=2;
-    else if(caught<=20) catchBonus=3;
-    else if(caught<=30) catchBonus=4;
-    else if(caught<=35) catchBonus=5;
-    else if(caught<=40) catchBonus=6;
-    else if(caught<=49) catchBonus=5;
-    else if(caught==50) catchBonus=10;
-
-    if(wrong>=20) errorBonus=0;
-    else if(wrong>=15) errorBonus=1;
-    else if(wrong>=10) errorBonus=2;
-    else if(wrong>=5) errorBonus=3;
-    else if(wrong>=3) errorBonus=4;
-    else if(wrong>=1) errorBonus=5;
-    else if(wrong==0) errorBonus=10;
-
-    if(missed<=3) missBonus=10;
-    else if(missed<=5) missBonus=9;
-    else if(missed<=8) missBonus=8;
-    else if(missed<=15) missBonus=7;
-    else if(missed<=20) missBonus=6;
-    else if(missed<=30) missBonus=5;
-    else if(missed<=36) missBonus=4;
-    else if(missed<=41) missBonus=3;
-    else missBonus=0;
-
-    let total=catchBonus+errorBonus+missBonus;
-
-    return {catchBonus,errorBonus,missBonus,total};
-}
-
-function endGame(){
-    gameActive=false;
-    clearInterval(spawn);
+function startTimer(){
     clearInterval(timer);
-    localStorage.setItem("maslenitsaPlayed","true");
-    controls.style.display="none";
-
-    let r=calculateResults();
-
-    overlay.style.display="flex";
-    overlay.innerHTML=`
-        <h2>Результаты игры:</h2>
-        <p>Поймано блинов: ${caught}(+${r.catchBonus})</p>
-        <p>Поймано ошибок: ${wrong}(+${r.errorBonus})</p>
-        <p>Пропущено блинов: ${missed}(+${r.missBonus})</p>
-        <h3>ИТОГО: ${r.total} блинов</h3>
-        <p>Отправь результат в группу, чтобы засчитать!</p>
-    `;
+    updateTimer();
+    timer = setInterval(()=>{
+        timeLeft--;
+        updateTimer();
+        if(timeLeft <= 0){
+            clearInterval(timer);
+            showTimeoutResults();
+        }
+    },1000);
 }
+
+function startRound(){
+    const game = document.getElementById("game");
+    game.className = "game round" + round;
+    document.getElementById("round").textContent = "Раунд " + round;
+    movesLeft = maxMoves[round];
+    updateMoves();
+
+    matches = 0;
+    firstCard = null;
+    lock = false;
+
+    let pairs = round === 1 ? 3 : round === 2 ? 6 : 10;
+
+    let selected = emojis.slice(0, pairs);
+    let cardsArray = [...selected, ...selected];
+    cardsArray.sort(() => 0.5 - Math.random());
+
+    game.innerHTML = "";
+
+    let columns = round === 3 ? 5 : Math.ceil(Math.sqrt(cardsArray.length));
+    game.style.gridTemplateColumns = `repeat(${columns}, auto)`;
+
+    cardsArray.forEach(emoji=>{
+        const card = document.createElement("div");
+        card.classList.add("card");
+
+        const inner = document.createElement("div");
+        inner.classList.add("inner");
+
+        const front = document.createElement("div");
+        front.classList.add("front");
+
+        const back = document.createElement("div");
+        back.classList.add("back");
+        back.textContent = emoji;
+
+        inner.appendChild(front);
+        inner.appendChild(back);
+        card.appendChild(inner);
+
+        card.dataset.emoji = emoji;
+        card.addEventListener("click", flipCard);
+
+        game.appendChild(card);
+    });
+}
+
+function flipCard(){
+    if(lock || this.classList.contains("flipped") || movesLeft <= 0) return;
+
+    if(!firstCard){
+        this.classList.add("flipped");
+        firstCard = this;
+        return;
+    }
+
+    movesLeft--;
+    totalMoves++;
+    updateMoves();
+
+    this.classList.add("flipped");
+
+    if(firstCard.dataset.emoji === this.dataset.emoji){
+        matches++;
+        this.classList.add("correct");
+        firstCard.classList.add("correct");
+
+        addScore(5, this);
+
+        firstCard = null;
+
+        if(matches === (round === 1 ? 3 : round === 2 ? 6 : 10)){
+            if(round < 3){
+                round++;
+                setTimeout(startRound, 800);
+            } else {
+                clearInterval(timer);
+                showResults();
+            }
+        }
+    } else {
+        lock = true;
+
+        this.classList.add("wrong");
+        firstCard.classList.add("wrong");
+
+        addScore(-2, this);
+
+        setTimeout(()=>{
+            this.classList.remove("flipped","wrong");
+            firstCard.classList.remove("flipped","wrong");
+            firstCard = null;
+            lock = false;
+
+            if(movesLeft <= 0){
+                clearInterval(timer);
+                showMovesOutResults();
+            }
+        },800);
+    }
+}
+
+function addScore(amount, element){
+    score += amount;
+    if(score < 0) score = 0;
+    if(score > 100) score = 100;
+    updateScore();
+
+    const float = document.createElement("div");
+    float.className = "floating";
+    float.textContent = (amount > 0 ? "+" : "") + amount;
+    float.style.color = amount > 0 ? "green" : "red";
+
+    const rect = element.getBoundingClientRect();
+    float.style.left = rect.left + rect.width/2 + "px";
+    float.style.top = rect.top + "px";
+
+    document.body.appendChild(float);
+    setTimeout(()=> float.remove(),1000);
+}
+
+function updateScore(){
+    document.getElementById("scoreBar").style.width = score + "%";
+    document.getElementById("scoreText").textContent = score + " / 100";
+}
+
+function updateMoves(){
+    document.getElementById("moves").textContent = "Ходы: " + movesLeft;
+}
+
+function updateTimer(){
+    let minutes = Math.floor(timeLeft/60);
+    let seconds = timeLeft%60;
+    document.getElementById("timer").textContent =
+        minutes.toString().padStart(2,"0") + ":" +
+        seconds.toString().padStart(2,"0");
+}
+
+function getTimePancakes(time) {
+    if (time <= 10) return 10;
+    if (time <= 30) return 9;
+    if (time <= 50) return 6;
+    if (time <= 70) return 7;
+    if (time <= 80) return 4;
+    if (time <= 90) return 2;
+    return 0;
+}
+
+function getScorePancakes(score) {
+    if (score <= 5) return 1;
+    if (score <= 10) return 2;
+    if (score <= 20) return 3;
+    if (score <= 40) return 4;
+    if (score <= 60) return 5;
+    if (score <= 80) return 6;
+    if (score <= 100) return 10;
+    return 0;
+}
+
+function getMovesPancakes(moves) {
+    if (moves <= 1) return 10;
+    if (moves <= 10) return 9;
+    if (moves <= 20) return 8;
+    if (moves <= 40) return 6;
+    if (moves <= 50) return 4;
+    if (moves <= 60) return 3;
+    return 0;
+}
+
+function showResults() {
+    const elapsedTime = 90 - timeLeft;
+    const timePancakes = getTimePancakes(elapsedTime);
+    const scorePancakes = getScorePancakes(score);
+    const movesPancakes = getMovesPancakes(totalMoves);
+    const totalPancakes = timePancakes + scorePancakes + movesPancakes;
+
+    const resultsDiv = document.getElementById("results");
+    resultsDiv.innerHTML = `
+        <h2>🎉 Игра пройдена!</h2>
+        <p>Время: ${elapsedTime} сек (${timePancakes} блинчиков)</p>
+        <p>Затраченные ходы: ${totalMoves} (${movesPancakes} блинчиков)</p>
+        <p>Очки: ${score} (${scorePancakes} блинчиков)</p>
+        <p>Всего блинчиков: ${totalPancakes} 🥞</p>
+        <p style="font-size: 12px; margin-top: 20px;">Не забудь отправить результат в группу</p>
+    `;
+    resultsDiv.style.display = "block";
+    document.getElementById("game").style.display = "none";
+    localStorage.setItem('resultsHTML', resultsDiv.innerHTML);
+    localStorage.setItem('gameCompleted', 'true');
+}
+
+function showTimeoutResults() {
+    const elapsedTime = 90 - timeLeft;
+    const timePancakes = getTimePancakes(elapsedTime);
+    const scorePancakes = getScorePancakes(score);
+    const movesPancakes = getMovesPancakes(totalMoves);
+    let totalPancakes = timePancakes + scorePancakes + movesPancakes;
+    totalPancakes = Math.floor(totalPancakes * 0.65);
+
+    const resultsDiv = document.getElementById("results");
+    resultsDiv.innerHTML = `
+        <h2>⏰ Время вышло!</h2>
+        <p>Время: ${elapsedTime} сек (${timePancakes} блинчиков)</p>
+        <p>Затраченные ходы: ${totalMoves} (${movesPancakes} блинчиков)</p>
+        <p>Очки: ${score} (${scorePancakes} блинчиков)</p>
+        <p>Всего блинчиков: ${totalPancakes} 🥞</p>
+        <p style="font-size: 12px; margin-top: 20px;">Не забудь отправить результат в группу</p>
+    `;
+    resultsDiv.style.display = "block";
+    document.getElementById("game").style.display = "none";
+    localStorage.setItem('resultsHTML', resultsDiv.innerHTML);
+    localStorage.setItem('gameCompleted', 'true');
+}
+
+function showMovesOutResults() {
+    const elapsedTime = 90 - timeLeft;
+    const timePancakes = getTimePancakes(elapsedTime);
+    const scorePancakes = getScorePancakes(score);
+    const movesPancakes = getMovesPancakes(totalMoves);
+    const totalPancakes = timePancakes + scorePancakes + movesPancakes;
+
+    const resultsDiv = document.getElementById("results");
+    resultsDiv.innerHTML = `
+        <h2>🚫 Ходы закончились!</h2>
+        <p>Время: ${elapsedTime} сек (${timePancakes} блинчиков)</p>
+        <p>Затраченные ходы: ${totalMoves} (${movesPancakes} блинчиков)</p>
+        <p>Очки: ${score} (${scorePancakes} блинчиков)</p>
+        <p>Всего блинчиков: ${totalPancakes} 🥞</p>
+        <p style="font-size: 12px; margin-top: 20px;">Не забудь отправить результат в группу</p>
+    `;
+    resultsDiv.style.display = "block";
+    document.getElementById("game").style.display = "none";
+    localStorage.setItem('resultsHTML', resultsDiv.innerHTML);
+    localStorage.setItem('gameCompleted', 'true');
+}
+
+window.onload = function() {
+    if (localStorage.getItem('gameCompleted')) {
+        const resultsDiv = document.getElementById("results");
+        resultsDiv.innerHTML = localStorage.getItem('resultsHTML');
+        resultsDiv.style.display = "block";
+        document.getElementById("tutorial").style.display = "none";
+        document.getElementById("game").style.display = "none";
+    } else {
+        document.getElementById("tutorial").style.display = "block";
+        document.getElementById("game").style.display = "none";
+        document.getElementById("results").style.display = "none";
+    }
+};
 </script>
 
 </body>
