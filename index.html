@@ -2,622 +2,588 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Масленица: сожги чучело</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Масленица: загадки и блины</title>
     <style>
         * {
             box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
-            user-select: none;
-            margin: 0;
-            padding: 0;
+            font-family: 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
         }
         body {
-            margin: 0;
+            background: #fef3e4;
+            background-image: radial-gradient(circle at 30% 30%, #ffdab9 0%, #fbc1a0 100%);
             min-height: 100vh;
-            background: linear-gradient(145deg, #ff944d, #f76300);
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
             display: flex;
-            align-items: center;
             justify-content: center;
-            padding: 8px;
+            align-items: center;
+            padding: 16px;
         }
-        .game-card {
-            max-width: 480px;
+        .pancake-card {
+            max-width: 700px;
             width: 100%;
-            background: #fff1d4;
-            border-radius: 40px 40px 35px 35px;
-            border: 4px solid #ffb457;
-            box-shadow: 0 15px 20px #8a3d19;
-            padding: 14px 10px 18px;
+            background: rgba(255, 250, 240, 0.9);
+            backdrop-filter: blur(6px);
+            border-radius: 60px 60px 40px 40px;
+            box-shadow: 0 25px 40px rgba(0, 0, 0, 0.2), 0 0 0 2px #ffdead inset, 0 0 0 5px #fff3e0 inset;
+            padding: 24px 28px 36px;
+            border: 6px solid #ffa07a;
         }
-        .title {
-            font-size: 2rem;
-            font-weight: 900;
-            color: #4e260b;
-            text-shadow: 2px 2px 0 #ffb95e;
-            text-align: center;
-            margin: 0 0 6px;
-        }
-        .pancakes-top {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
-            background: #c96829;
-            padding: 8px 18px;
-            border-radius: 40px;
-            border: 3px solid #ffd58c;
-            margin: 0 auto 10px;
-            width: fit-content;
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: #ffefc0;
-            box-shadow: inset 0 -2px 0 #884e1e;
-        }
-        .lives-block {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            background: #673e1d;
-            padding: 6px 18px;
-            border-radius: 40px;
-            border: 3px solid #feb65e;
-            width: fit-content;
-            margin: 0 auto 12px;
-        }
-        .heart {
-            font-size: 2rem;
-            transition: 0.2s;
-            filter: drop-shadow(0 2px 2px #221002);
-        }
-        .heart.lost {
-            opacity: 0.25;
-            filter: grayscale(1);
-        }
-        .area {
-            background: #b15927;
-            background: radial-gradient(circle at 20% 30%, #d67f3a, #a04215);
-            border-radius: 80px 80px 40px 40px;
-            padding: 18px 12px 16px;
-            border: 4px solid #ffb457;
-            box-shadow: inset 0 -5px 0 #7b3f18, 0 10px 15px #7a3e1a;
-            margin: 5px 0 12px;
-            display: flex;
-            flex-direction: row;
-            align-items: center;
-            justify-content: center;
-            gap: 15px;
-            flex-wrap: nowrap;
-        }
-        .image-box {
-            position: relative;
-            width: 140px;
-            height: 140px;
-            flex-shrink: 0;
-        }
-        .scarecrow {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            display: block;
-            border-radius: 30px;
-            border: 4px solid #ffb860;
-            background: #a0521d;
-            box-shadow: 4px 5px 0 #4f2a0f;
-            transition: filter 0.3s;
-        }
-        .burnt {
-            position: absolute;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            background: #000000e5;
-            border-radius: 30px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #ff8f5a;
-            font-size: 1.4rem;
-            font-weight: 900;
-            backdrop-filter: grayscale(1);
-            opacity: 0;
-            transition: opacity 0.4s;
-            pointer-events: none;
-            border: 3px solid #ff7300;
-        }
-        .burnt.show { opacity: 1; }
-        
-        .v-progress {
-            width: 30px;
-            height: 140px;
-            background: #3e1c09;
-            border-radius: 30px;
-            border: 3px solid #ffb457;
-            box-shadow: inset 0 0 0 2px #241004;
-            padding: 4px;
-            display: flex;
-            flex-direction: column-reverse;
-        }
-        .v-fill {
-            width: 100%;
-            height: 0%;
-            background: linear-gradient(0deg, #ff5e00, #ffb347);
-            border-radius: 25px;
-            transition: height 0.15s;
-            border: 1px solid #ffffb0;
-        }
-        .fire-layer {
-            position: absolute;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            pointer-events: none;
-            z-index: 20;
-        }
-        .flame {
-            position: absolute;
-            font-size: 1.4rem;
-            filter: drop-shadow(0 0 4px #ff9900);
-            animation: flicker 0.8s infinite alternate;
-        }
-        @keyframes flicker {
-            0% { transform: scale(1); opacity: 0.7; }
-            100% { transform: scale(1.2); opacity: 1; }
-        }
-        .action-btn {
-            background: #f5832b;
-            border: none;
-            width: 100%;
-            padding: 16px 10px;
-            border-radius: 80px;
-            font-size: 2rem;
-            font-weight: 900;
+        .timer-section {
+            background: #b22222;
             color: #fff3cd;
-            text-transform: uppercase;
-            border-bottom: 6px solid #964b1e;
-            text-shadow: 2px 2px 0 #773d12;
+            padding: 12px 20px;
+            border-radius: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 30px;
+            font-weight: bold;
+            font-size: 1.6rem;
+            border: 3px solid #ffd700;
+            box-shadow: 0 5px 0 #8b0000;
+        }
+        .timer {
+            background: #2e1b0e;
+            padding: 8px 24px;
+            border-radius: 60px;
+            font-family: 'Courier New', monospace;
+            letter-spacing: 4px;
+            color: #ffeb99;
+            text-shadow: 0 0 4px orange;
+            font-size: 2.1rem;
+        }
+        .pancakes-ico {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .pancakes-ico span {
+            font-size: 1.9rem;
+        }
+
+        .question-box {
+            background: #fff3d6;
+            border-radius: 80px 80px 40px 40px;
+            padding: 30px 20px 20px;
+            border: 4px dashed #e67e22;
+            margin-bottom: 20px;
+        }
+        .badge-question {
+            background: #e67e22;
+            color: white;
+            padding: 8px 24px;
+            border-radius: 40px;
+            display: inline-block;
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+        .question-text {
+            font-size: 1.5rem;
+            line-height: 1.3;
+            color: #3d1f00;
+            margin-bottom: 28px;
+            font-weight: 600;
+            padding: 0 10px;
+        }
+        .answer-area {
+            background: white;
+            border-radius: 50px;
+            padding: 5px 15px 5px 25px;
+            display: flex;
+            align-items: center;
+            border: 3px solid #c98f5e;
+            margin-bottom: 15px;
+        }
+        .answer-area input {
+            border: none;
+            flex: 1;
+            font-size: 1.3rem;
+            padding: 14px 5px;
+            outline: none;
+            background: transparent;
+            color: #3f280e;
+        }
+        .save-btn {
+            background: #2e8b57;
+            color: white;
+            border: none;
+            width: 58px;
+            height: 58px;
+            border-radius: 50%;
+            font-size: 2.4rem;
+            line-height: 1;
             cursor: pointer;
-            transition: 0.08s;
-            box-shadow: 0 10px 12px #6a3113;
-            margin: 8px 0;
-            touch-action: manipulation;
-        }
-        .action-btn:active {
-            transform: translateY(4px);
-            border-bottom-width: 3px;
-        }
-        .action-btn:disabled {
-            opacity: 0.5;
-            transform: translateY(3px);
-            pointer-events: none;
-        }
-        /* Модальное окно обучения */
-        .modal {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.5);
-            backdrop-filter: blur(2px);
             display: flex;
             align-items: center;
             justify-content: center;
-            z-index: 1000;
-            padding: 15px;
+            transition: 0.2s;
+            border: 3px solid #f9e076;
+            box-shadow: 0 4px 0 #1b4d3b;
+            margin-right: 5px;
         }
-        .modal-content {
-            max-width: 350px;
-            width: 100%;
-            background: #fff0d0;
-            border-radius: 40px;
-            border: 5px solid #ffa53e;
-            padding: 20px 15px;
-            text-align: center;
-            box-shadow: 0 15px 20px #6b2c0b;
+        .save-btn:active {
+            transform: translateY(4px);
+            box-shadow: none;
         }
-        .modal-content h2 {
-            font-size: 1.8rem;
-            margin: 0 0 10px;
-            color: #552606;
+        .save-btn:disabled {
+            opacity: 0.5;
+            transform: none;
+            pointer-events: none;
+            background: #a9a9a9;
+            border-color: #ccc;
         }
-        .rules {
-            background: #fec185;
-            border-radius: 30px;
-            padding: 15px;
-            margin: 10px 0;
-            font-size: 1.2rem;
-            text-align: left;
+        .nav-buttons {
+            display: flex;
+            justify-content: flex-end;
+            gap: 15px;
+            margin: 15px 0 20px;
         }
-        .rules p {
+        .nav-btn {
+            background: #ffb347;
+            border: none;
+            padding: 16px 25px;
+            border-radius: 50px;
+            font-size: 1.4rem;
+            font-weight: bold;
+            color: #2c1c0c;
             display: flex;
             align-items: center;
-            gap: 8px;
-            margin: 8px 0;
-            font-weight: 600;
-        }
-        .rules span { font-size: 1.5rem; }
-        
-        .modal-btn {
-            background: #ff9f4b;
-            border: none;
-            font-size: 1.5rem;
-            font-weight: 900;
-            padding: 12px 25px;
-            border-radius: 50px;
-            color: #3b1a05;
-            border-bottom: 5px solid #964b1e;
+            gap: 10px;
             cursor: pointer;
-            margin-top: 8px;
-            width: 100%;
+            border: 3px solid #ffe484;
+            box-shadow: 0 5px 0 #b16200;
+            transition: 0.1s ease;
+            flex: 0 1 auto;
+            justify-content: center;
         }
-        .modal-btn:active {
-            transform: translateY(3px);
-            border-bottom-width: 3px;
+        .nav-btn:active {
+            transform: translateY(4px);
+            box-shadow: 0 1px 0 #b16200;
         }
-        .hidden { display: none; }
-        
-        .result-line {
-            font-size: 1.2rem;
-            margin: 10px 0;
-            background: #ffeac2;
-            padding: 12px;
-            border-radius: 30px;
-            text-align: left;
-            line-height: 1.6;
+        .nav-btn:disabled {
+            opacity: 0.4;
+            transform: none;
+            box-shadow: 0 4px 0 #7a4c1a;
+            pointer-events: none;
         }
-        .final-pancakes {
-            background: #c96d2a;
-            color: #fff8cf;
-            padding: 15px;
-            border-radius: 40px;
-            font-size: 2rem;
-            font-weight: 900;
-            margin: 10px 0;
+        .arrow {
+            font-size: 1.9rem;
         }
-        .footer-hint {
+        .pagination-info {
             text-align: center;
+            font-size: 1.3rem;
+            background: #ffdec2;
+            border-radius: 40px;
+            padding: 8px;
+            width: fit-content;
+            margin: 10px auto 5px;
+        }
+
+        .results-screen {
+            background: #fae7cb;
+            border-radius: 40px;
+            padding: 24px;
+            border: 5px solid #d48d54;
+        }
+        .result-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 25px 0;
+        }
+        .stat-card {
+            background: #f5deb3;
+            border-radius: 30px;
+            padding: 16px;
+            text-align: center;
+            border: 2px solid #b5712f;
+        }
+        .big-number {
+            font-size: 3rem;
+            font-weight: 800;
+            color: #b4450c;
+        }
+        .pancake-badge {
+            background: #d2691e;
+            color: white;
+            border-radius: 40px;
+            padding: 10px 20px;
+            font-size: 1.6rem;
+            font-weight: bold;
+            display: inline-block;
+            margin: 5px 0;
+        }
+        .answers-review {
+            background: #ffe6c9;
+            border-radius: 24px;
+            padding: 15px;
+            margin: 20px 0;
+            max-height: 260px;
+            overflow-y: auto;
+        }
+        .review-item {
+            background: white;
+            border-radius: 30px;
+            padding: 10px 18px;
+            margin-bottom: 8px;
+            border-left: 10px solid #cd853f;
+        }
+        .correct-badge {
+            color: #1f7a1f;
+            font-weight: bold;
+        }
+        .wrong-badge {
+            color: #a52a2a;
+        }
+        .restart-btn {
+            background: #e67e22;
+            color: white;
+            border: none;
+            font-size: 1.6rem;
+            padding: 15px 30px;
+            border-radius: 50px;
+            font-weight: bold;
+            width: 100%;
+            cursor: pointer;
+            border-bottom: 6px solid #9e4a0e;
+        }
+        .restart-btn:active {
+            transform: translateY(4px);
+            border-bottom-width: 2px;
+        }
+        .footer-pancakes {
+            background: #fff0bc;
+            border-radius: 40px;
+            padding: 16px 20px;
+            margin-top: 24px;
+            font-size: 1.7rem;
+            font-weight: bold;
+            text-align: center;
+            border: 3px solid #cb7b3b;
+        }
+        .hidden {
+            display: none !important;
+        }
+        .disabled-btn {
+            opacity: 0.5;
+        }
+        .small-note {
             font-size: 1rem;
-            margin-top: 8px;
-            color: #4a2810;
-            font-weight: 600;
+            color: #5f3d22;
+            margin: 5px;
         }
     </style>
 </head>
 <body>
-<div class="game-card">
-    <div class="title">☀️ МАСЛЕНИЦА ☀️</div>
-
-    <!-- Счётчик блинов -->
-    <div class="pancakes-top">
-        <span>🥞</span>
-        <span id="pancakeCounter">0</span>
-    </div>
-
-    <div class="lives-block" id="livesDisplay">
-        <span class="heart">❤️</span>
-        <span class="heart">❤️</span>
-        <span class="heart">❤️</span>
-    </div>
-
-    <div class="area">
-        <div class="image-box" id="scarecrowZone">
-            <img src="https://markbartolomeev-blip.github.io/Maslenitsa/IMG_1194.png" alt="Чучело" class="scarecrow" id="scarecrowImg" crossorigin="anonymous">
-            <div class="burnt" id="burntOverlay">ПЕПЕЛ</div>
-            <div class="fire-layer" id="fireLayer"></div>
+    <div class="pancake-card" id="app">
+        <!-- Секундомер всегда виден -->
+        <div class="timer-section">
+            <div class="pancakes-ico">
+                <span>🥞</span><span>секундомер</span>
+            </div>
+            <div class="timer" id="timerDisplay">00</div>
         </div>
-        <div class="v-progress">
-            <div class="v-fill" id="progressFill"></div>
+
+        <!-- ЭКРАН ВОПРОСОВ (виден до завершения) -->
+        <div id="quizScreen">
+            <div class="question-box">
+                <div class="badge-question" id="questionBadge">Загадка <span id="currentIdxSpan">1</span>/7</div>
+                <div class="question-text" id="questionText"></div>
+                <div class="answer-area">
+                    <input type="text" id="answerInput" placeholder="твой ответ..." autocomplete="off">
+                    <button class="save-btn" id="saveAnswerBtn" title="сохранить ответ (галочка)">✓</button>
+                </div>
+                <div class="small-note" id="saveHint">👉 нажми галочку, чтобы ответ сохранился</div>
+            </div>
+
+            <div class="nav-buttons">
+                <!-- Только кнопка "вперёд" -->
+                <button class="nav-btn" id="nextBtn"><span class="arrow">→</span> вперёд</button>
+            </div>
+            <div class="pagination-info" id="paginationText"></div>
+            <!-- Кнопка мгновенного перехода к результатам УДАЛЕНА -->
+        </div>
+
+        <!-- ЭКРАН РЕЗУЛЬТАТОВ (скрыт изначально) -->
+        <div id="resultScreen" class="hidden">
+            <div class="results-screen">
+                <h2 style="color:#692f0b; text-align:center;">🍯 твои блины 🍯</h2>
+                <div class="result-stats">
+                    <div class="stat-card">
+                        <div>правильных</div>
+                        <div class="big-number" id="correctCount">0</div>
+                        <div>из 7</div>
+                    </div>
+                    <div class="stat-card">
+                        <div>время (сек)</div>
+                        <div class="big-number" id="timeSpent">0</div>
+                    </div>
+                </div>
+                <div style="display: flex; justify-content: center; gap: 30px; flex-wrap: wrap;">
+                    <div><span class="pancake-badge" id="pancakesTime">0</span> 🥞 за время</div>
+                    <div><span class="pancake-badge" id="pancakesCorrect">0</span> 🥞 за ответы</div>
+                </div>
+                <div class="footer-pancakes" id="totalPancakes">итого: 0 блинов 🥞</div>
+
+                <div class="answers-review" id="answersReviewList"></div>
+
+                <button class="restart-btn" id="restartBtn">🔥 пройти заново 🔥</button>
+            </div>
         </div>
     </div>
 
-    <button class="action-btn" id="holdBtn">🔥 ЖЕЧЬ 🔥</button>
-    <div class="footer-hint" id="statusMessage"></div>
-</div>
+    <script>
+        (function() {
+            // ---------- база загадок и либеральные ответы (всё засчитывается как угодно) ----------
+            const riddles = [
+                {
+                    text: "Огнём её корчуют, дымом небо чуют, В реке топят останки, чтоб жить без осадка. Кто она, что сначала сжигают, а потом хоронят в воде?",
+                    keywords: ["чучело", "маслениц", "чучело масленицы", "зим", "чучело зимы"]
+                },
+                {
+                    text: "Семь сестёр к одной печи приходят. Первая — для встречи, Вторая — для заигрыша, Третья — к сладкому столу, Четвёртая — к широкому разгулу, Пятая — к тёще на блины, Шестая — к золовке на посиделки, а Седьмая — самая молчаливая, всем прощения просит. Что за событие, раз сестры собрались?",
+                    keywords: ["масленичная неделя", "неделя", "маслениц", "сырная", "масленичная"]
+                },
+                {
+                    text: "Жидкое, а лепят. Горячее, а в рот просят. Круглое, а внутри вся вселенная: и мед, и икра, и сметана, и даже смерть (для зимы). Что это, если оно родилось из воды, муки и яйца?",
+                    keywords: ["тесто", "блинное тесто", "тесто для блинов", "блин", "опара"]
+                },
+                {
+                    text: "Не школа, а учит. Не свекровь, а зятя пестует. Не книга, а рецепты хранит. В среду она его кормит, в пятницу он её ждет. Кто она, если без неё Масленица — не Масленица, а зять — сирота?",
+                    keywords: ["тёща", "теща", "тёща масленичная"]
+                },
+                {
+                    text: "Я — самый главный на столе, но меня никто не ест. Меня кладут на блюдо, но я не для гостей. Меня выносят из дома, чтобы отдать ветру и птицам. Кто я, если я — память о предках и задабривание духов?",
+                    keywords: ["первый блин", "блин", "первый блин комом"]
+                },
+                {
+                    text: "Косолапый гость на Масленицу незваным приходит, но его ждут. Он не ест блины, но любит, когда его дразнят. Он не танцует, но его заставляют. Кто это, если его роль исполнял ряженый мужик в вывернутом тулупе?",
+                    keywords: ["медведь", "мишка", "косолапый"]
+                },
+                {
+                    text: "Не лошадь, а с горы везет. Не сани, а полозья есть. Не птица, а летит. Кто на ней сядет — тот год счастливым будет, а кто упадет — тому снега в рот. Что за масленичный транспорт?",
+                    keywords: ["ледянка", "санки", "ледяна", "катулька"]
+                }
+            ];
 
-<!-- МАЛЕНЬКОЕ ОБУЧЕНИЕ -->
-<div class="modal" id="tutorialModal">
-    <div class="modal-content">
-        <h2>🥞 ПРАВИЛА</h2>
-        <div class="rules">
-            <p><span>❤️</span> 3 жизни</p>
-            <p><span>🔥</span> Держи кнопку — жги</p>
-            <p><span>😱</span> Отпустил = −1 жизнь</p>
-            <p><span>🥞</span> За победу дадут блины</p>
-        </div>
-        <button class="modal-btn" id="closeTutorialBtn">ОК</button>
-    </div>
-</div>
+            // либеральная проверка: включает хотя бы одно ключевое слово (регистр не важен)
+            function isAnswerCorrect(userAnswer, keywords) {
+                if (!userAnswer || userAnswer.trim() === '') return false;
+                const lowerAnswer = userAnswer.trim().toLowerCase().replace(/\s+/g, ' ');
+                for (let kw of keywords) {
+                    if (lowerAnswer.includes(kw.toLowerCase())) return true;
+                }
+                return false;
+            }
 
-<!-- Модальное окно результата -->
-<div class="modal hidden" id="resultModal">
-    <div class="modal-content">
-        <h2>🏁 РЕЗУЛЬТАТ</h2>
-        <div id="statsMessage" class="result-line"></div>
-        <div id="pancakeResult" class="final-pancakes"></div>
-    </div>
-</div>
+            // --- состояние ---
+            let currentIndex = 0;                     // 0-6
+            let userAnswers = new Array(7).fill('');  // сохранённые ответы
+            let answeredCorrect = new Array(7).fill(null); // true/false/null если не сохранено
 
-<script>
-(function() {
-    // ===== случайное целевое время =====
-    const MIN_TARGET = 102 * 1000;   // 1.7 мин
-    const MAX_TARGET = 150 * 1000;   // 2.5 мин
-    
-    const TARGET_MS = Math.floor(Math.random() * (MAX_TARGET - MIN_TARGET + 1)) + MIN_TARGET;
-    const TARGET_MINUTES = (TARGET_MS / 60000).toFixed(1);
-    
-    // состояния
-    const MAX_LIVES = 3;
-    let holding = false;
-    let holdMs = 0;
-    let lives = MAX_LIVES;
-    let gameActive = true;
-    let victory = false;
-    let gameEnded = false;
-    
-    let animFrame = null;
-    let lastTs = null;
-    
-    // DOM
-    const holdBtn = document.getElementById('holdBtn');
-    const progressFill = document.getElementById('progressFill');
-    const fireLayer = document.getElementById('fireLayer');
-    const scarecrow = document.getElementById('scarecrowImg');
-    const burntOverlay = document.getElementById('burntOverlay');
-    const statusMsg = document.getElementById('statusMessage');
-    const livesContainer = document.getElementById('livesDisplay');
-    const pancakeSpan = document.getElementById('pancakeCounter');
-    
-    const tutorialModal = document.getElementById('tutorialModal');
-    const resultModal = document.getElementById('resultModal');
-    const closeTutorialBtn = document.getElementById('closeTutorialBtn');
-    const statsMessage = document.getElementById('statsMessage');
-    const pancakeResult = document.getElementById('pancakeResult');
-    
-    // ===== функции =====
-    function updateLivesUI() {
-        const hearts = livesContainer.querySelectorAll('.heart');
-        hearts.forEach((heart, idx) => {
-            if (idx < lives) heart.classList.remove('lost');
-            else heart.classList.add('lost');
-        });
-    }
-    
-    // НАЧИСЛЕНИЕ ЗА ВРЕМЯ
-    function getTimePancakes(minutes) {
-        if (minutes >= 1.7 && minutes <= 1.9) return 1;
-        if (minutes >= 2.0 && minutes <= 2.1) return 2;
-        if (minutes >= 2.2 && minutes <= 2.3) return 3;
-        if (minutes >= 2.4 && minutes <= 2.5) return 5;
-        return 0;
-    }
-    
-    // НАЧИСЛЕНИЕ ЗА ЖИЗНИ (НОВАЯ СИСТЕМА)
-    function getLivesPancakes(livesLeft) {
-        if (livesLeft === 3) return 10;  // осталось 3 жизни
-        if (livesLeft === 2) return 5;   // осталось 2 жизни
-        if (livesLeft === 1) return 3;   // осталась 1 жизнь
-        return 0;                         // 0 жизней (поражение)
-    }
-    
-    function refreshVisuals() {
-        if (victory) {
-            progressFill.style.height = '100%';
-            burntOverlay.classList.add('show');
-            scarecrow.style.filter = 'grayscale(1) brightness(0.3)';
-            fireLayer.innerHTML = '';
-            holdBtn.disabled = true;
-            statusMsg.innerText = '✨ Победа! ✨';
-            if (!gameEnded) {
-                gameEnded = true;
-                showResult(true);
+            let timerInterval = null;
+            let seconds = 0;
+            let quizActive = true;          // таймер считает до перехода к результатам
+            let finished = false;
+
+            // DOM элементы
+            const quizScreen = document.getElementById('quizScreen');
+            const resultScreen = document.getElementById('resultScreen');
+            const questionText = document.getElementById('questionText');
+            const answerInput = document.getElementById('answerInput');
+            const saveBtn = document.getElementById('saveAnswerBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            const currentIdxSpan = document.getElementById('currentIdxSpan');
+            const paginationText = document.getElementById('paginationText');
+            const timerDisplay = document.getElementById('timerDisplay');
+            // Кнопка "к результатам" больше не существует
+
+            // элементы результата
+            const correctCountSpan = document.getElementById('correctCount');
+            const timeSpentSpan = document.getElementById('timeSpent');
+            const pancakesTimeSpan = document.getElementById('pancakesTime');
+            const pancakesCorrectSpan = document.getElementById('pancakesCorrect');
+            const totalPancakesSpan = document.getElementById('totalPancakes');
+            const answersReviewList = document.getElementById('answersReviewList');
+            const restartBtn = document.getElementById('restartBtn');
+
+            // ---- функции таймера ----
+            function startTimer() {
+                if (timerInterval) clearInterval(timerInterval);
+                timerInterval = setInterval(() => {
+                    if (quizActive && !finished) {
+                        seconds++;
+                        updateTimerDisplay();
+                    }
+                }, 1000);
             }
-            return;
-        }
-        
-        if (lives <= 0) {
-            progressFill.style.height = '0%';
-            burntOverlay.classList.remove('show');
-            scarecrow.style.filter = 'none';
-            fireLayer.innerHTML = '';
-            holdBtn.disabled = true;
-            statusMsg.innerText = '💔 Поражение 💔';
-            if (!gameEnded) {
-                gameEnded = true;
-                showResult(false);
+            function updateTimerDisplay() {
+                timerDisplay.textContent = seconds.toString().padStart(2, '0');
             }
-            return;
-        }
-        
-        const percent = (holdMs / TARGET_MS) * 100;
-        progressFill.style.height = percent + '%';
-        
-        if (holding && !victory && lives > 0) {
-            const flameCount = Math.floor(percent / 10) + 1;
-            fireLayer.innerHTML = '';
-            for (let i = 0; i < flameCount; i++) {
-                const f = document.createElement('span');
-                f.className = 'flame';
-                f.textContent = '🔥';
-                f.style.left = Math.random() * 90 + '%';
-                f.style.top = Math.random() * 90 + '%';
-                f.style.fontSize = (1.2 + Math.random() * 1.2) + 'rem';
-                fireLayer.appendChild(f);
+            function stopTimer() {
+                quizActive = false;
+                if (timerInterval) clearInterval(timerInterval);
+                timerInterval = null;
             }
-        } else {
-            fireLayer.innerHTML = '';
-        }
-        
-        burntOverlay.classList.remove('show');
-        scarecrow.style.filter = 'none';
-    }
-    
-    function checkVictory() {
-        if (holdMs >= TARGET_MS && !victory) {
-            victory = true;
-            gameActive = false;
-            holding = false;
-            if (animFrame) cancelAnimationFrame(animFrame);
-            animFrame = null;
-            refreshVisuals();
-        }
-    }
-    
-    function loseLife() {
-        if (victory || lives <= 0) return;
-        lives -= 1;
-        updateLivesUI();
-        holdMs = 0;
-        refreshVisuals();
-        
-        if (lives <= 0) {
-            gameActive = false;
-            holding = false;
-            if (animFrame) cancelAnimationFrame(animFrame);
-            animFrame = null;
-            holdBtn.disabled = true;
-        }
-    }
-    
-    function showResult(isWin) {
-        console.log('Победа?', isWin);
-        
-        if (isWin) {
-            // ПОБЕДА - считаем блины
-            const minutes = TARGET_MS / 60000;
-            console.log('Минут:', minutes);
-            console.log('Осталось жизней:', lives);
-            
-            const timeBonus = getTimePancakes(minutes);
-            const livesBonus = getLivesPancakes(lives); // lives = 3,2 или 1
-            const total = timeBonus + livesBonus;
-            
-            console.log('Бонус за время:', timeBonus);
-            console.log('Бонус за жизни:', livesBonus);
-            console.log('Всего блинов:', total);
-            
-            // Обновляем счётчик
-            pancakeSpan.textContent = total;
-            
-            statsMessage.innerHTML = 
-                `⏱️ Время: ${minutes.toFixed(1)} мин ( +${timeBonus}🥞 )<br>` +
-                `❤️ Осталось жизней: ${lives} ( +${livesBonus}🥞 )`;
-            
-            pancakeResult.innerHTML = `🥞 ИТОГО: ${total} 🥞`;
-        } else {
-            // ПОРАЖЕНИЕ
-            pancakeSpan.textContent = '0';
-            
-            statsMessage.innerHTML = 
-                `💔 Чучело не сгорело<br>` +
-                `🥞 Блины не начисляются`;
-            
-            pancakeResult.innerHTML = `🥞 ИТОГО: 0 🥞`;
-        }
-        
-        // ПОКАЗЫВАЕМ ОКНО
-        resultModal.classList.remove('hidden');
-    }
-    
-    // цикл удержания
-    function holdCycle(now) {
-        if (!holding || !gameActive || victory || lives <= 0) {
-            if (animFrame) { cancelAnimationFrame(animFrame); animFrame = null; }
-            return;
-        }
-        
-        if (lastTs === null) {
-            lastTs = now;
-            animFrame = requestAnimationFrame(holdCycle);
-            return;
-        }
-        
-        const delta = Math.min(200, now - lastTs);
-        if (delta > 0) {
-            holdMs += delta;
-            if (holdMs > TARGET_MS) holdMs = TARGET_MS;
-            refreshVisuals();
-            checkVictory();
-        }
-        
-        lastTs = now;
-        animFrame = requestAnimationFrame(holdCycle);
-    }
-    
-    // обработчики
-    function onPress(e) {
-        e.preventDefault();
-        if (!gameActive || victory || lives <= 0 || gameEnded) return;
-        if (holding) return;
-        
-        holding = true;
-        lastTs = null;
-        if (animFrame) cancelAnimationFrame(animFrame);
-        animFrame = requestAnimationFrame(holdCycle);
-        statusMsg.innerText = '🔥 Держи!';
-    }
-    
-    function onRelease(e) {
-        e.preventDefault();
-        if (!gameActive || victory || lives <= 0 || gameEnded) {
-            holding = false;
-            return;
-        }
-        if (!holding) return;
-        
-        holding = false;
-        if (animFrame) { cancelAnimationFrame(animFrame); animFrame = null; }
-        lastTs = null;
-        
-        loseLife();
-        refreshVisuals();
-        if (lives > 0) statusMsg.innerText = `Жизней: ${lives}`;
-    }
-    
-    // ===== события =====
-    holdBtn.addEventListener('mousedown', onPress);
-    holdBtn.addEventListener('mouseup', onRelease);
-    holdBtn.addEventListener('mouseleave', onRelease);
-    holdBtn.addEventListener('touchstart', onPress, { passive: false });
-    holdBtn.addEventListener('touchend', onRelease);
-    holdBtn.addEventListener('touchcancel', onRelease);
-    holdBtn.addEventListener('contextmenu', e => e.preventDefault());
-    
-    document.addEventListener('mouseup', (e) => {
-        if (holding && gameActive && !victory && lives > 0 && !gameEnded) onRelease(e);
-    });
-    document.addEventListener('touchend', (e) => {
-        if (holding && gameActive && !victory && lives > 0 && !gameEnded && !holdBtn.contains(e.target)) onRelease(e);
-    });
-    
-    // закрыть обучение
-    closeTutorialBtn.addEventListener('click', () => {
-        tutorialModal.classList.add('hidden');
-    });
-    
-    // инициализация
-    holdMs = 0;
-    lives = MAX_LIVES;
-    gameActive = true;
-    victory = false;
-    holding = false;
-    gameEnded = false;
-    updateLivesUI();
-    refreshVisuals();
-    statusMsg.innerText = `Цель: ${TARGET_MINUTES} мин`;
-    holdBtn.disabled = false;
-    pancakeSpan.textContent = '0';
-    
-    scarecrow.onerror = function() {
-        console.warn('картинка не загрузилась');
-        this.style.display = 'none';
-        const parent = this.parentNode;
-        const emoji = document.createElement('div');
-        emoji.style.fontSize = '5rem';
-        emoji.style.textAlign = 'center';
-        emoji.style.lineHeight = '140px';
-        emoji.textContent = '🌾👹🌾';
-        parent.insertBefore(emoji, this);
-    };
-})();
-</script>
+
+            // ---- отрисовка текущего вопроса ----
+            function renderQuestion() {
+                if (finished) return;
+                const riddle = riddles[currentIndex];
+                questionText.textContent = riddle.text;
+                currentIdxSpan.textContent = (currentIndex + 1);
+                paginationText.textContent = `вопрос ${currentIndex+1} из 7`;
+
+                // показываем сохранённый ответ, если есть
+                answerInput.value = userAnswers[currentIndex] || '';
+
+                // ЛОГИКА: переход только если нажат save и ответ записан
+                const isCurrentSaved = userAnswers[currentIndex] !== '';
+                
+                // для next - если не сохранён или это последний вопрос, то дизейблим
+                if (currentIndex === 6) {
+                    nextBtn.disabled = true; // на последнем вопросе кнопка неактивна
+                } else {
+                    nextBtn.disabled = !isCurrentSaved;
+                }
+            }
+
+            // Функция проверки, все ли вопросы имеют сохранённый ответ
+            function allQuestionsAnswered() {
+                return userAnswers.every(answer => answer !== '');
+            }
+
+            // Подсчет финала и показ результатов
+            function finishQuiz() {
+                if (finished) return;
+                stopTimer();
+                quizActive = false;
+                finished = true;
+
+                // подсчет правильных
+                let correctCount = 0;
+                for (let i = 0; i < 7; i++) {
+                    if (userAnswers[i] !== '' && isAnswerCorrect(userAnswers[i], riddles[i].keywords)) {
+                        correctCount++;
+                        answeredCorrect[i] = true;
+                    } else {
+                        answeredCorrect[i] = false;  // неверно или пусто
+                    }
+                }
+
+                // блинчики за правильные ответы
+                const correctBonuses = [0, 3, 5, 6, 7, 8, 9, 10]; // индекс = количество правильных (от 0 до 7)
+                const pancakesFromCorrect = correctBonuses[correctCount] || 0;
+
+                // блинчики за время (обновленная шкала)
+                let timeBonus = 0;
+                if (seconds <= 25) timeBonus = 10;
+                else if (seconds <= 39) timeBonus = 8;
+                else if (seconds <= 60) timeBonus = 7;
+                else if (seconds <= 99) timeBonus = 6;
+                else if (seconds <= 130) timeBonus = 5;
+                else if (seconds <= 170) timeBonus = 4;
+                else timeBonus = 3;
+
+                const total = pancakesFromCorrect + timeBonus;
+
+                // вывод на экран (убрана надпись "в скобках")
+                correctCountSpan.textContent = correctCount;
+                timeSpentSpan.textContent = seconds;
+                pancakesTimeSpan.textContent = timeBonus;
+                pancakesCorrectSpan.textContent = pancakesFromCorrect;
+                totalPancakesSpan.innerHTML = `итого: ${total} блинов 🥞`;
+
+                // построить ревью
+                let reviewHtml = '';
+                riddles.forEach((r, idx) => {
+                    const ans = userAnswers[idx] || '(не отвечено)';
+                    const isCor = answeredCorrect[idx];
+                    reviewHtml += `<div class="review-item"><strong>${idx+1}.</strong> ${r.text.substring(0,50)}… <br>➜ твой ответ: "${ans}" — <span class="${isCor ? 'correct-badge' : 'wrong-badge'}">${isCor ? '✓ верно' : '✗ неверно'}</span></div>`;
+                });
+                answersReviewList.innerHTML = reviewHtml;
+
+                // переключить экраны
+                quizScreen.classList.add('hidden');
+                resultScreen.classList.remove('hidden');
+            }
+
+            // обработка сохранения (галочка)
+            function saveCurrentAnswer() {
+                const answer = answerInput.value.trim();
+                userAnswers[currentIndex] = answer; // даже пустой сохраняем как строку (чтобы считалось "ответ дал")
+                // определяем правильность
+                const correct = isAnswerCorrect(answer, riddles[currentIndex].keywords);
+                answeredCorrect[currentIndex] = correct;
+
+                // после сохранения обновляем кнопки навигации
+                renderQuestion();  // обновит disabled с учётом сохранённого
+                
+                // показать подсказку что сохранено
+                document.getElementById('saveHint').innerHTML = '✅ ответ сохранён';
+                setTimeout(() => {
+                    if (!finished) document.getElementById('saveHint').innerHTML = '👉 нажми галочку, чтобы ответ сохранился';
+                }, 1500);
+
+                // Проверяем, ответил ли пользователь на все 7 вопросов
+                if (allQuestionsAnswered()) {
+                    finishQuiz(); // автоматически показываем результаты
+                }
+            }
+
+            // переход вперёд
+            function goNext() {
+                if (currentIndex < 6) {
+                    currentIndex++;
+                    renderQuestion();
+                }
+            }
+
+            // restart
+            function restartQuiz() {
+                stopTimer();
+                // сброс
+                currentIndex = 0;
+                userAnswers = new Array(7).fill('');
+                answeredCorrect = new Array(7).fill(null);
+                seconds = 0;
+                quizActive = true;
+                finished = false;
+                updateTimerDisplay();
+                startTimer();
+
+                quizScreen.classList.remove('hidden');
+                resultScreen.classList.add('hidden');
+                renderQuestion();
+                document.getElementById('saveHint').innerHTML = '👉 нажми галочку, чтобы ответ сохранился';
+                answerInput.value = '';
+            }
+
+            // ---- обработчики ----
+            saveBtn.addEventListener('click', function() {
+                saveCurrentAnswer();
+            });
+
+            nextBtn.addEventListener('click', goNext);
+
+            restartBtn.addEventListener('click', function() {
+                restartQuiz();
+            });
+
+            // дополнительно: если нажать Enter в поле ввода - сохранять
+            answerInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    saveCurrentAnswer();
+                }
+            });
+
+            // инициализация
+            renderQuestion();
+            startTimer();
+        })();
+    </script>
 </body>
 </html>
